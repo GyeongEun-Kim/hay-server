@@ -1,26 +1,31 @@
 package sillenceSoft.schedulleCall.Service;
 
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import sillenceSoft.schedulleCall.Dto.UserDto;
 import sillenceSoft.schedulleCall.Repository.UserRepository;
+
+import java.security.NoSuchAlgorithmException;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
+    private final SHA_256 sha256;
     private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
 
-    public String signup() {
+    public String login(UserDto user) throws NoSuchAlgorithmException {
 
-        //return userRepository.findBy();
-        return "";
+        if (userRepository.findById(user)==null) {
+            userRepository.login(user); //회원가입
+        }
+
+        return jwtProvider.createToken(user.getId(),user.getPhone());
+
     }
 
-    public String login() {
-
-        //return userRepository.findBy();
-        return "";
-    }
 
 
 
