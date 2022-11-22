@@ -12,4 +12,6 @@ public interface UserRepository {
 
     UserDto findById(@Param("id")String id);
 
+    int getUserNoById (@Param("id")String id);
+
 }

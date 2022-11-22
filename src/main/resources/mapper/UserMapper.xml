@@ -18,6 +18,12 @@
             resultType="sillenceSoft.schedulleCall.Dto.UserDto">
         select * from User where id= #{id};
     </select>
+
+    <select id="getUserNoById"
+            parameterType="String"
+            resultType="int">
+        select userNo from User where id=#{id};
+    </select>
 </mapper>
 
 

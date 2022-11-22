@@ -4,17 +4,18 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="sillenceSoft.schedulleCall.Repository.StatusRepository">
-<!--    <select id="getSchedule" parameterType="Integer">-->
-<!--        -->
-<!--    </select>-->
-<!--    -->
+    <select id="getAllStatus" parameterType="int" resultType="map" >
+        select * from Status where userNo=${userNo};
+    </select>
+
 <!--    <select id="getStatus" parameterType="Integer"-->
 <!--            resultType="List">-->
 <!--        select status from Status where userNo=${userNo};-->
 <!--    </select>-->
 
-<!--    <insert id="addStatus" parameterType="">-->
-
-<!--    </insert>-->
+    <insert id="addStatus" parameterType="sillenceSoft.schedulleCall.Dto.StatusDto"
+            useGeneratedKeys="true" keyProperty="statusNo">
+        insert into Status(userNo, status, ModDt) values (${statusDto.userNo}, #{statusDto.status}, #{statusDto.modDt});
+    </insert>
 
 </mapper>

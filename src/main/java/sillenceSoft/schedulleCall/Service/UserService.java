@@ -50,7 +50,7 @@ public class UserService {
         public String setSession (HttpServletRequest request, UserDto userDto) {
 
             HttpSession session = request.getSession();
-            session.setMaxInactiveInterval(30);
+            session.setMaxInactiveInterval(7200); //2시간
             session.setAttribute("id",userDto.getId());
             return session.getId();
         }
@@ -81,5 +81,7 @@ public class UserService {
                 return new ResponseEntity("session disconnected. Please login again",HttpStatus.UNAUTHORIZED);
             }
         }
+
+
 
     }
