@@ -12,11 +12,14 @@ import sillenceSoft.schedulleCall.Service.ScheduleService;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class ScheduleController {
+public class StatusSettingController {
     private final ScheduleService scheduleService;
 
-    @GetMapping(value = "/schedule")
-    public String readSchedule () {
+    @GetMapping(value = "/status-setting") //상태관리 메뉴
+    public String getStateSettingMenu () {
+        String schedule = scheduleService.getSchedule();
+
+
         return "";
     } //
 

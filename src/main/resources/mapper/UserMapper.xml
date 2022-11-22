@@ -6,6 +6,18 @@
 
 <!-- Mapper를 사용하는 Repository의 전체 경로를 적어줘야함. -->
 <mapper namespace="sillenceSoft.schedulleCall.Repository.UserRepository">
+    <insert id="login"
+            parameterType="sillenceSoft.schedulleCall.Dto.UserDto"
+            useGeneratedKeys="true" keyProperty = "userNo">
+        insert into User (id, phone, social, regTime, nowStatus) values
+        (#{userDto.id}, #{userDto.phone}, #{userDto.social}, #{userDto.regTime}, #{userDto.nowStatus});
+    </insert>
+
+    <select id="findById"
+            parameterType="String"
+            resultType="sillenceSoft.schedulleCall.Dto.UserDto">
+        select * from User where id= #{id};
+    </select>
 </mapper>
 
 
