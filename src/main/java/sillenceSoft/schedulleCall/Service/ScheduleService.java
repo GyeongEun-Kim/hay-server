@@ -13,12 +13,9 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ScheduleContentRepository scheduleContentRepository;
 
-    public List<String> getStatus () {
-       // List<String> status = scheduleRepository.getStatus();
-        return null;
-    }
 
-    public String getSchedule() {
+    public String getMySchedule(String id) {
+
         return "";
     }
 }

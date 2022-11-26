@@ -25,8 +25,8 @@ public class social {
                 "    \"kid\": \"27b86dc6938dc327b204333a250ebb43b32e4b3c\",\n" +
                 "    \"typ\": \"JWT\"\n" +
                 "}";
-        JsonParser parser = new JsonParser();
-        JsonElement element = parser.parse(result);
+
+        JsonElement element = JsonParser.parseString(result);
         String id = element.getAsJsonObject().get("sub").getAsString();
 
         Assertions.assertThat(id.equals("105328303472081545460"));
