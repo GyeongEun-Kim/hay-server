@@ -36,7 +36,6 @@ public class UserService {
     public UserDto login(UserRequestDto userRequestDto) throws NoSuchAlgorithmException {
         String id = sha256.encrypt(getIdBySocial(userRequestDto));
         //String id = sha256.encrypt("test"); //로컬테스트용
-        System.out.println(id);
         UserDto userDto = userRepository.findById(id);
 
         if (userDto==null) { //신규회원인 경우
@@ -55,12 +54,13 @@ public class UserService {
 
     public String getIdBySocial ( UserRequestDto userRequestDto) {
         String id = "";
-        if (userRequestDto.getSocial().equals(0)) { //구글로그인
+        if (userRequestDto.getSocial().equals("0")) { //구글로그인
             id = googleUserInfo.getUserInfo(userRequestDto.getToken());
         }
-        else if (userRequestDto.getSocial().equals(1)) { //카카오로그인
+        else if (userRequestDto.getSocial().equals("1")) { //카카오로그인
             id = kakaoUserInfo.getUserInfo(userRequestDto.getToken());
         }
+        System.out.println("id = " + id);
         return id;
     }
 
