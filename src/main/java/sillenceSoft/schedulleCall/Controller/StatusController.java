@@ -11,6 +11,7 @@ import sillenceSoft.schedulleCall.Service.ScheduleService;
 import sillenceSoft.schedulleCall.Service.StatusService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,19 +24,31 @@ public class StatusController {
     private final ScheduleService scheduleService;
     private final StatusService statusService;
 
-    @GetMapping(value = "/status-memo")
-    public ResponseEntity getAllStatusMemo (HttpServletRequest request) {
-        List<Map<String, String>> allStatusMemo = statusService.getAllStatusMemo(request);
+    @GetMapping(value = "/status")
+    public ResponseEntity getAllStatus (HttpServletRequest request) {
+        List<Map<String, String>> allStatusMemo = statusService.getAllStatus(request);
         return new ResponseEntity(allStatusMemo, HttpStatus.OK);
     }
 
-    @PostMapping("/status-memo")
-    public ResponseEntity addStatusMemo (HttpServletRequest request, @RequestParam(name = "status") String newStatusMemo) {
-        return statusService.addStatusMemo(request, newStatusMemo);
+    @PostMapping("/status")
+    public ResponseEntity addStatus (HttpServletRequest request, @RequestParam(name = "status") String newStatusMemo) {
+        return statusService.addStatus(request, newStatusMemo);
     }
 
-    @DeleteMapping("/schedule")
-    public String deleteSchedule () {
-        return "";
+    @DeleteMapping("/status")
+    public String deleteStatus (HttpServletRequest request, @RequestParam(name = "statusNo") int statusNo) {
+
+        statusService.deleteStatus(statusNo);
+        return "success";
     }
+
+    @PutMapping("/status")
+    public String updateStatus (HttpServletRequest request, @RequestParam(name = "status") String status,
+                                @RequestParam(name = "statusNo") int statusNo) {
+        statusService.updateStatus(status, statusNo);
+        return "success";
+    }
+
+
+
 }

@@ -9,8 +9,8 @@
     <insert id="login"
             parameterType="sillenceSoft.schedulleCall.Dto.UserDto"
             useGeneratedKeys="true" keyProperty = "userNo">
-        insert into User (id, phone, social, regTime, nowStatus) values
-        (#{userDto.id}, #{userDto.phone}, #{userDto.social}, #{userDto.regTime}, #{userDto.nowStatus});
+        insert into User (id, phone, social, regTime, statusNo) values
+        (#{userDto.id}, #{userDto.phone}, #{userDto.social}, #{userDto.regTime}, #{userDto.statusNo});
     </insert>
 
     <select id="findById"
@@ -21,9 +21,13 @@
 
     <select id="getUserNoById"
             parameterType="String"
-            resultType="int">
+            resultType="Integer">
         select userNo from User where id=#{id};
     </select>
+
+    <update id="setNowStatus">
+        update User set statusNo = ${statusNo} where userNo = ${userNo};
+    </update>
 </mapper>
 
 

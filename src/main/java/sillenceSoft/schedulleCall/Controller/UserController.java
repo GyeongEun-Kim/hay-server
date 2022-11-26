@@ -1,5 +1,8 @@
 package sillenceSoft.schedulleCall.Controller;
 
+import com.sun.net.httpserver.Headers;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -8,19 +11,27 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.header.Header;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import sillenceSoft.schedulleCall.Dto.UserDto;
 import sillenceSoft.schedulleCall.Dto.UserRequestDto;
+import sillenceSoft.schedulleCall.Repository.RefreshTokenRepository;
 import sillenceSoft.schedulleCall.Service.GoogleUserInfo;
+import sillenceSoft.schedulleCall.Service.JWTProvider;
 import sillenceSoft.schedulleCall.Service.KakaoUserInfo;
 import sillenceSoft.schedulleCall.Service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,25 +42,61 @@ public class UserController {
     private final UserService userService;
     private final GoogleUserInfo googleUserInfo;
     private final KakaoUserInfo kakaoUserInfo;
+    private final JWTProvider jwtProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
+
 
     @PostMapping(value = "/login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity login (@ModelAttribute UserRequestDto userRequestDto, HttpServletRequest request) throws NoSuchAlgorithmException {
+    public ResponseEntity login (@ModelAttribute UserRequestDto userRequestDto,HttpServletResponse response) throws NoSuchAlgorithmException {
 
-        UserDto userDto = userService.login(userRequestDto);
-        String sessionId = userService.setSession(request, userDto);
-        System.out.println("sessionId = " + sessionId);
-        //사용자 정보 받아와 DB저장 & 세션설정
-        HttpHeaders header = new HttpHeaders();
-       // header.set("Set-Cookie",sessionId=sessionId);
-        return new ResponseEntity<UserDto>(userDto,header,HttpStatus.OK);
+        UserDto userDto = userService.login(userRequestDto); //유저 정보
+        String accessToken = jwtProvider.createAccessToken(userDto.getId(), userDto.getRegTime());
+        String refreshToken = jwtProvider.createRefreshToken(userDto.getId(), userDto.getRegTime());
+
+        jwtProvider.setHeaderAccessToken(accessToken,response );
+        jwtProvider.setHeaderRefreshToken(refreshToken, response);
+
+//        refreshTokenRepository.addRefreshToken(refreshToken);
+
+        System.out.println("accessToken = " + accessToken);
+
+        System.out.println("refreshToken = " + refreshToken);
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("/session-check") //세션연장 세션끊긴상태면 세션끊겼다고 알려서 로그인페이지로 다시 이동할수 있게
-    public ResponseEntity sessionCheck (HttpServletRequest request) {
-        return userService.sessionCheck(request);
+    @GetMapping("/jwt-check") //토큰 유효시간 확인과 연장
+    public ResponseEntity jwtCheck (HttpServletRequest request, HttpServletResponse response) {
+        String accessToken =  jwtProvider.getAccessToken(request);
+        String refreshToken = jwtProvider.getRefreshToken(request);
+        String newAccessToken = userService.jwtCheck(accessToken, refreshToken);
+        System.out.println("newAccessToken = " + newAccessToken);
+        String msg ="";
+        if (!newAccessToken.equals("")) {//기존 엑세스토큰이 유효함
+            jwtProvider.setHeaderAccessToken(accessToken, response);
+            msg="valid";
+        }
+        else  { //새로운 엑세스 토큰발급
+            jwtProvider.setHeaderAccessToken(newAccessToken , response);
+            msg="new access token";
+        }
+        jwtProvider.setHeaderRefreshToken(refreshToken, response);
 
+        return new ResponseEntity(msg, HttpStatus.OK);
     }
+
+    @PostMapping("/nowStatus")
+    public void setNowStatus (Authentication authentication,
+                              @RequestParam(name = "statusNo") int statusNo) {
+        Claims principal = (Claims)authentication.getPrincipal();
+        String id = (String) principal.get("id");
+        userService.setNowStatus(id, statusNo);
+
+
+       // userService.setNowStatus(statusNo);
+    }
+
 
 
 

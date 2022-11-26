@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class StatusDto {
-    private int userNo;
-    private int statusNo;
+    private Integer userNo;
+    private Integer statusNo;
     private String status;
     private LocalDateTime modDt;
 }

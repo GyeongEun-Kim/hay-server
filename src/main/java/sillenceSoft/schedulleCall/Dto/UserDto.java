@@ -19,6 +19,6 @@ public class UserDto {
     private String phone;
     private String social;
     private LocalDateTime regTime;
-    private String nowStatus;
+    private Integer statusNo;
 
 }

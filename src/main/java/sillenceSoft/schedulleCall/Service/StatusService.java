@@ -22,38 +22,54 @@ public class StatusService {
     private final StatusRepository statusRepository;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final JWTProvider jwtProvider;
 
-    public List<Map<String,String>> getAllStatusMemo (HttpServletRequest request) {
-        ResponseEntity responseEntity = userService.sessionCheck(request);
-        List<Map<String,String>> allStatus = new ArrayList<>();
-        if (responseEntity.getStatusCode()== HttpStatus.OK) {
-            String id = (String) request.getSession().getAttribute("id");
-            int userNo = userRepository.getUserNoById(id);
-            allStatus = statusRepository.getAllStatus(userNo);
-        }
+    public List<Map<String,String>> getAllStatus (HttpServletRequest request) {
+
+        String accessToken = jwtProvider.getAccessToken(request);
+        String id = (String)jwtProvider.validTokenAndReturnBody(accessToken).get("id");
+        int userNo = userRepository.getUserNoById(id);
+        List<Map<String,String>> allStatus = statusRepository.getAllStatus(userNo);
         return allStatus;
     }
 
-    public ResponseEntity addStatusMemo (HttpServletRequest request, String newStatusMemo) {
-        ResponseEntity responseEntity = userService.sessionCheck(request);
-        if (responseEntity.getStatusCode()== HttpStatus.OK) {
-            String id = (String) request.getSession().getAttribute("id");
-            int userNo = userRepository.getUserNoById(id);
-            StatusDto statusDto = StatusDto.builder()
+    public ResponseEntity addStatus (HttpServletRequest request, String newStatusMemo) {
+        String accessToken = jwtProvider.getAccessToken(request);
+        String id = (String)jwtProvider.validTokenAndReturnBody(accessToken).get("id");
+        int userNo = userRepository.getUserNoById(id);
+        ResponseEntity responseEntity;
+        StatusDto statusDto = StatusDto.builder()
                     .userNo(userNo)
                     .status(newStatusMemo)
                     .modDt(LocalDateTime.now())
                     .build();
-            try {
-                statusRepository.addStatus(statusDto);
-                responseEntity = new ResponseEntity(statusDto, HttpStatus.OK);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                responseEntity = new ResponseEntity("failed", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+        try {
+            statusRepository.addStatus(statusDto);
+            responseEntity = new ResponseEntity(statusDto, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            responseEntity = new ResponseEntity("failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseEntity;
     }
+
+
+    public void deleteStatus ( int statusNo) {
+//        String accessToken = jwtProvider.getAccessToken(request);
+//        String id = (String)jwtProvider.validTokenAndReturnBody(accessToken).get("id");
+        //int userNo = userRepository.getUserNoById(id);
+        try {
+            statusRepository.deleteStatus(statusNo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateStatus ( String status, int statusNo) {
+        statusRepository.updateStatus(status,statusNo, LocalDateTime.now());
+    }
+
+
 
 }
