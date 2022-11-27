@@ -51,8 +51,8 @@ public class UserController {
     public ResponseEntity login (@ModelAttribute UserRequestDto userRequestDto,HttpServletResponse response) throws NoSuchAlgorithmException {
 
         UserDto userDto = userService.login(userRequestDto); //유저 정보
-        String accessToken = jwtProvider.createAccessToken(userDto.getId(), userDto.getRegTime());
-        String refreshToken = jwtProvider.createRefreshToken(userDto.getId(), userDto.getRegTime());
+        String accessToken = jwtProvider.createAccessToken(userDto.getId(), userDto.getRegTime().toString());
+        String refreshToken = jwtProvider.createRefreshToken(userDto.getId(), userDto.getRegTime().toString());
 
         jwtProvider.setHeaderAccessToken(accessToken,response );
         jwtProvider.setHeaderRefreshToken(refreshToken, response);
@@ -67,23 +67,8 @@ public class UserController {
     }
 
     @GetMapping("/jwt-check") //토큰 유효시간 확인과 연장
-    public ResponseEntity jwtCheck (HttpServletRequest request, HttpServletResponse response) {
-        String accessToken =  jwtProvider.getAccessToken(request);
-        String refreshToken = jwtProvider.getRefreshToken(request);
-        String newAccessToken = userService.jwtCheck(accessToken, refreshToken);
-        System.out.println("newAccessToken = " + newAccessToken);
-        String msg ="";
-        if (!newAccessToken.equals("")) {//기존 엑세스토큰이 유효함
-            jwtProvider.setHeaderAccessToken(accessToken, response);
-            msg="valid";
-        }
-        else  { //새로운 엑세스 토큰발급
-            jwtProvider.setHeaderAccessToken(newAccessToken , response);
-            msg="new access token";
-        }
-        jwtProvider.setHeaderRefreshToken(refreshToken, response);
+    public void jwtCheck (Authentication authentication, HttpServletResponse response) {
 
-        return new ResponseEntity(msg, HttpStatus.OK);
     }
 
     @PostMapping("/nowStatus")
@@ -92,9 +77,6 @@ public class UserController {
         Claims principal = (Claims)authentication.getPrincipal();
         String id = (String) principal.get("id");
         userService.setNowStatus(id, statusNo);
-
-
-       // userService.setNowStatus(statusNo);
     }
 
 

@@ -5,24 +5,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import sillenceSoft.schedulleCall.Dto.UserDto;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.security.InvalidParameterException;
-import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 
 @Component
 public class JWTProvider {
     @Value("${spring.jwt.secret}")
     private String secretKey;
 
-    private long AccessTokenValidTime= 60 * 30 * 1000; //30분
-    private long RefreshTokenValidTime = 60* 60 * 24 * 30 * 2 * 1000; //2개월
+    private long AccessTokenValidTime= 60 * 1 * 60 * 1000; //1시간
+    private long RefreshTokenValidTime = 60* 24 *60 * 1000 * 30 * 2; //2개월
 
     // 객체 초기화, secretKey를 Base64로 인코딩한다.
     @PostConstruct
@@ -31,7 +27,7 @@ public class JWTProvider {
     }
 
     // 엑세스 토큰 생성
-    public String createAccessToken(String id, LocalDateTime regTime) {
+    public String createAccessToken(String id, String regTime) {
         Claims claims = Jwts.claims().setSubject("JWT제목"); // JWT payload 에 저장되는 정보단위
         claims.put("id",id); // 정보는 key / value 쌍으로 저장된다.
         claims.put("regTime", regTime.toString());
@@ -45,10 +41,10 @@ public class JWTProvider {
                 .compact();
     }
     // 리프레시 토큰 생성
-    public String createRefreshToken(String id, LocalDateTime regTime) {
+    public String createRefreshToken(String id, String regTime) {
         Claims claims = Jwts.claims().setSubject("JWT제목"); // JWT payload 에 저장되는 정보단위
         claims.put("id",id); // 정보는 key / value 쌍으로 저장된다.
-        claims.put("regTime", regTime.toString());
+        claims.put("regTime", regTime);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
@@ -60,18 +56,35 @@ public class JWTProvider {
     }
 
 
-    // 토큰 해석
+    // 토큰 해석 (유효한 토큰 일때만)
     public Claims validTokenAndReturnBody(String token) {
+        Claims claims =null;
         try {
-            return Jwts.parser()
+            claims= Jwts.parser()
                     .setSigningKey(secretKey)
                     .parseClaimsJws(token)
                     .getBody();
-        } catch(ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
-            e.printStackTrace();
-            throw new InvalidParameterException("유효하지 않은 토큰입니다");
         }
+        catch(ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
+            e.printStackTrace();
+           // throw new InvalidParameterException("유효하지 않은 토큰입니다");
+        }
+        return claims;
     }
+//
+//    public boolean checkExpired (String token) {
+//        Date now = new Date();
+//        long nowTime = now.getTime();
+//        System.out.println("nowTime = " + nowTime);
+//        long expiredTime = Jwts
+//                .parser()
+//                .setClock()
+//        System.out.println("expiredTime = " + expiredTime);
+//        if (expiredTime- nowTime < 0)
+//            return true; //만료됨
+//        else return false;
+//    }
+
 
     public Authentication getAuthentication (String token) {
         Claims claims = Jwts.parser()

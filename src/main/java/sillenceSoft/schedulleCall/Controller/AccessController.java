@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,13 +23,15 @@ public class AccessController {
     private final AccessService accessService;
 
     @PostMapping("/allow-access")
-    public String canAccess (Authentication authentication) {
-        return "";
+    public String canAccess (Authentication authentication, Integer allowUserNo) {
+
+        return accessService.canAccess(authentication, allowUserNo);
     }
 
-    @PostMapping("/forbid-access")
-    public String cannotAccess () {
-        return "";
+    @DeleteMapping("/forbid-access")
+    public void cannotAccess (Authentication authentication)
+    {
+       // return accessService.
     }
 
     @GetMapping("/access")

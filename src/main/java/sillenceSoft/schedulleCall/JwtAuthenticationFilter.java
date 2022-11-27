@@ -30,13 +30,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 유효한 토큰인지 확인합니다.
         if (accessToken != null) {
-            // 어세스 토큰이 유효한 상황
+            // 엑세스 토큰이 유효한 상황
             if (jwtProvider.validTokenAndReturnBody(accessToken)!=null) {
                 System.out.println("엑세스토큰 유효");
                 this.setAuthentication(accessToken);
             }
-            // 어세스 토큰이 만료된 상황 | 리프레시 토큰 또한 존재하는 상황
-            else if (jwtProvider.validTokenAndReturnBody(accessToken)==null && refreshToken != null) {
+            // 엑세스 토큰이 만료된 상황 | 리프레시 토큰은 유효한 상황
+            else if (jwtProvider.validTokenAndReturnBody(accessToken)==null && jwtProvider.validTokenAndReturnBody(refreshToken)!=null) {
                 // 재발급 후, 컨텍스트에 다시 넣기
                 /// 리프레시 토큰 검증
                 Claims claims = jwtProvider.validTokenAndReturnBody(refreshToken);
@@ -44,19 +44,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                // boolean isRefreshToken = jwtProvider.existsRefreshToken(refreshToken);
              //   if (validateRefreshToken && isRefreshToken) {
                 String id = (String)claims.get("id");
-                LocalDateTime regTime = (LocalDateTime) claims.get("regTime");
+                String regTime=(String) claims.get("regTime");
                 System.out.println("id = " + id);
                 System.out.println("regTime = " + regTime);
                 /// 토큰 발급
-                    String newAccessToken = jwtProvider.createAccessToken(id, regTime);
-                    /// 헤더에 어세스 토큰 추가
-                   jwtProvider.setHeaderAccessToken(newAccessToken, response);
-                    /// 컨텍스트에 넣기
+                String newAccessToken = jwtProvider.createAccessToken(id, regTime);
+                /// 헤더에 어세스 토큰 추가
+                jwtProvider.setHeaderAccessToken(newAccessToken, response);
+                jwtProvider.setHeaderRefreshToken(refreshToken,response);
+                /// 컨텍스트에 넣기
                 System.out.println("리프레시토큰 유효, 엑세스 새로 발급");
-                    this.setAuthentication(newAccessToken);
+                this.setAuthentication(newAccessToken);
+
+                }
+            else if (jwtProvider.validTokenAndReturnBody(accessToken)==null && jwtProvider.validTokenAndReturnBody(refreshToken)==null){
+                //두 토큰 모두 유효하지 않음
+                response.sendError(401, "토큰이 유효하지 않습니다. 로그인 페이지로 돌아갑니다.");
                 }
             }
-        System.out.println("필터 동작");
         filterChain.doFilter(request, response);
         }
 

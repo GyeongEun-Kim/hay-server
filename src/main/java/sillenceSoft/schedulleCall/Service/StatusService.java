@@ -1,8 +1,10 @@
 package sillenceSoft.schedulleCall.Service;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import sillenceSoft.schedulleCall.Dto.StatusDto;
 import sillenceSoft.schedulleCall.Repository.StatusRepository;
@@ -20,22 +22,20 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class StatusService {
     private final StatusRepository statusRepository;
-    private final UserService userService;
     private final UserRepository userRepository;
-    private final JWTProvider jwtProvider;
 
-    public List<Map<String,String>> getAllStatus (HttpServletRequest request) {
 
-        String accessToken = jwtProvider.getAccessToken(request);
-        String id = (String)jwtProvider.validTokenAndReturnBody(accessToken).get("id");
+    public List<Map<String,String>> getAllStatus (Authentication authentication) {
+        Claims principal = (Claims) authentication.getPrincipal();
+        String id = (String)principal.get("id");
         int userNo = userRepository.getUserNoById(id);
         List<Map<String,String>> allStatus = statusRepository.getAllStatus(userNo);
         return allStatus;
     }
 
-    public ResponseEntity addStatus (HttpServletRequest request, String newStatusMemo) {
-        String accessToken = jwtProvider.getAccessToken(request);
-        String id = (String)jwtProvider.validTokenAndReturnBody(accessToken).get("id");
+    public ResponseEntity addStatus (Authentication authentication, String newStatusMemo) {
+        Claims principal = (Claims) authentication.getPrincipal();
+        String id = (String)principal.get("id");
         int userNo = userRepository.getUserNoById(id);
         ResponseEntity responseEntity;
         StatusDto statusDto = StatusDto.builder()
@@ -55,10 +55,13 @@ public class StatusService {
     }
 
 
-    public void deleteStatus ( int statusNo) {
+    public void deleteStatus (Authentication authentication, int statusNo) {
 //        String accessToken = jwtProvider.getAccessToken(request);
 //        String id = (String)jwtProvider.validTokenAndReturnBody(accessToken).get("id");
         //int userNo = userRepository.getUserNoById(id);
+        Claims principal = (Claims) authentication.getPrincipal();
+        String id = (String)principal.get("id");
+        int userNo = userRepository.getUserNoById(id);
         try {
             statusRepository.deleteStatus(statusNo);
         } catch (Exception e) {
@@ -66,7 +69,10 @@ public class StatusService {
         }
     }
 
-    public void updateStatus ( String status, int statusNo) {
+    public void updateStatus (Authentication authentication, String status, int statusNo) {
+        Claims principal = (Claims) authentication.getPrincipal();
+        String id = (String)principal.get("id");
+        int userNo = userRepository.getUserNoById(id);
         statusRepository.updateStatus(status,statusNo, LocalDateTime.now());
     }
 
