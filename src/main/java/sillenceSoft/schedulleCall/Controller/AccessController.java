@@ -22,16 +22,16 @@ import java.util.List;
 public class AccessController {
     private final AccessService accessService;
 
-    @PostMapping("/allow-access")
-    public String canAccess (Authentication authentication, Integer allowUserNo) {
+    @PostMapping("/access")
+    public String canAccess (Authentication authentication, Integer accessUserNo) {
 
-        return accessService.canAccess(authentication, allowUserNo);
+        return accessService.canAccess(authentication, accessUserNo);
     }
 
-    @DeleteMapping("/forbid-access")
-    public void cannotAccess (Authentication authentication)
+    @DeleteMapping("/access")
+    public String cannotAccess (Authentication authentication, Integer accessUserNo)
     {
-       // return accessService.
+        return accessService.cannotAccess(authentication, accessUserNo);
     }
 
     @GetMapping("/access")

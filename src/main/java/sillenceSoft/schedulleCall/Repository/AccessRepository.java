@@ -11,6 +11,6 @@ import java.util.List;
 @Mapper
 public interface AccessRepository  {
     List<UserDto> getAccessList (Integer userNo);
-    void saveAccess (Integer UserNo, Integer allowUserNo);
-
+    void saveAccess (Integer userNo, Integer accessUserNo);
+    void deleteAccess (Integer userNo, Integer accessUserNo);
 }

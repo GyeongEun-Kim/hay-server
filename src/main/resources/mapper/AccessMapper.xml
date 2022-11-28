@@ -13,4 +13,13 @@
             where userNo = ${ userNo }
             );
     </select>
+
+
+    <insert id="saveAccess">
+        insert into Access(accessUserNo, userNo) values (${accessUserNo}, ${userNo});
+    </insert>
+
+    <delete id="deleteAccess">
+        delete from Access where accessUserNo = ${accessUserNo}, userNo = ${userNo} ;
+    </delete>
 </mapper>
