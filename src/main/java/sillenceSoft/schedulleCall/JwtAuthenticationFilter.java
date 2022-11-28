@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -25,8 +26,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 헤더에서 JWT 를 받아옵니다.
-        String accessToken = jwtProvider.getAccessToken(request);
-        String refreshToken = jwtProvider.getRefreshToken(request);
+        String accessToken = jwtProvider.getAccessToken(request).orElse(null);
+        String refreshToken = jwtProvider.getRefreshToken(request).orElse(null);
 
         if (accessToken != null && refreshToken!=null) { //토큰이 존재
             if (jwtProvider.validTokenAndReturnBody(accessToken)!=null) {  // 엑세스 토큰이 유효한 상황

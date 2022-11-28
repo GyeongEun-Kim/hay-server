@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JWTProvider {
@@ -103,12 +104,12 @@ public class JWTProvider {
         response.setHeader("refreshToken", "bearer "+ refreshToken);
     }
 
-    public String getAccessToken (HttpServletRequest request) {
-        return request.getHeader("authorization").substring(7);
+    public Optional<String> getAccessToken (HttpServletRequest request) {
+        return Optional.ofNullable(request.getHeader("authorization").substring(7));
     }
 
-    public String getRefreshToken (HttpServletRequest request) {
-        return request.getHeader("refreshToken").substring(7);
+    public Optional<String> getRefreshToken (HttpServletRequest request) {
+        return Optional.ofNullable(request.getHeader("refreshToken").substring(7));
     }
 
 
