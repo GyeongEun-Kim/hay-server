@@ -26,10 +26,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 헤더에서 JWT 를 받아옵니다.
-        String accessToken = jwtProvider.getAccessToken(request).orElse(null);
-        String refreshToken = jwtProvider.getRefreshToken(request).orElse(null);
+        String accessToken = jwtProvider.getAccessToken(request).orElse("empty");
+        String refreshToken = jwtProvider.getRefreshToken(request).orElse("empty");
 
-        if (accessToken != null && refreshToken!=null) { //토큰이 존재
+
+        if ( accessToken.equals("empty") || refreshToken.equals("empty")){ //두 토큰 자체가 오지않은경우
+            response.sendError(401, "토큰을 보내주세요.");
+        }
+
+        else if (!accessToken.equals("empty") && !refreshToken.equals("empty")) { //토큰이 존재
+            accessToken=accessToken.substring(7);
+            refreshToken=refreshToken.substring(7);
             if (jwtProvider.validTokenAndReturnBody(accessToken)!=null) {  // 엑세스 토큰이 유효한 상황
                 System.out.println("엑세스토큰 유효");
                 this.setAuthentication(accessToken);
@@ -51,16 +58,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 jwtProvider.setHeaderRefreshToken(refreshToken,response);
                 System.out.println("리프레시토큰 유효, 엑세스 새로 발급");
                 this.setAuthentication(newAccessToken);
+
+                filterChain.doFilter(request, response);
                 }
             else if (jwtProvider.validTokenAndReturnBody(accessToken)==null && jwtProvider.validTokenAndReturnBody(refreshToken)==null){
                 //두 토큰 모두 유효하지 않음
                 response.sendError(401, "토큰이 유효하지 않습니다. 로그인 페이지로 돌아갑니다.");
                 }
             }
-        else { //두 토큰 자체가 오지않은경우
-            response.sendError(401, "토큰을 보내주세요.");
-        }
-        filterChain.doFilter(request, response);
+
         }
 
      //SecurityContext 에 Authentication 객체를 저장합니다.

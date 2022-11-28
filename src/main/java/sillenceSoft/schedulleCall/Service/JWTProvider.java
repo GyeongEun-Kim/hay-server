@@ -105,11 +105,13 @@ public class JWTProvider {
     }
 
     public Optional<String> getAccessToken (HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader("authorization").substring(7));
+        Optional<String> accessToken = Optional.ofNullable(request.getHeader("authorization"));
+        return accessToken;
     }
 
     public Optional<String> getRefreshToken (HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader("refreshToken").substring(7));
+        Optional<String> refreshToken = Optional.ofNullable(request.getHeader("refreshToken"));
+        return refreshToken;
     }
 
 
