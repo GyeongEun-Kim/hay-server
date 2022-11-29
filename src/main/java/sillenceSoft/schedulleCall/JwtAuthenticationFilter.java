@@ -40,6 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtProvider.validTokenAndReturnBody(accessToken)!=null) {  // 엑세스 토큰이 유효한 상황
                 System.out.println("엑세스토큰 유효");
                 this.setAuthentication(accessToken);
+                filterChain.doFilter(request, response);
             }
             // 엑세스 토큰이 만료된 상황 | 리프레시 토큰은 유효한 상황 -> 재발급
             else if (jwtProvider.validTokenAndReturnBody(accessToken)==null && jwtProvider.validTokenAndReturnBody(refreshToken)!=null) {

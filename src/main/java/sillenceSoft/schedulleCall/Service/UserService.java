@@ -35,7 +35,7 @@ public class UserService {
 
     public UserDto login(UserRequestDto userRequestDto) throws NoSuchAlgorithmException {
         String id = sha256.encrypt(getIdBySocial(userRequestDto));
-       // String id = sha256.encrypt("test"); //로컬테스트용
+        //String id = sha256.encrypt("test"); //로컬테스트용
         UserDto userDto = userRepository.findById(id);
 
         if (userDto==null) { //신규회원인 경우

@@ -29,7 +29,7 @@ public class AccessService {
         String id = (String)principal.get("id");
         int userNo = userRepository.getUserNoById(id);
         accessRepository.deleteAccess(userNo, accessUserNo);
-        return "";
+        return "success";
     }
 
     public List<UserDto> getAccessList(String id) {

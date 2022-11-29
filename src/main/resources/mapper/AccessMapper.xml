@@ -10,7 +10,7 @@
         where userNo = (
             select accessUserNo
             from Access
-            where userNo = ${ userNo }
+            where accessUserNo = ${ accessUserNo }
             );
     </select>
 
@@ -20,6 +20,6 @@
     </insert>
 
     <delete id="deleteAccess">
-        delete from Access where accessUserNo = ${accessUserNo}, userNo = ${userNo} ;
+        delete from Access where accessUserNo = ${accessUserNo} and userNo = ${userNo} ;
     </delete>
 </mapper>
