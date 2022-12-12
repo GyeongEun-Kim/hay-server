@@ -28,6 +28,14 @@
     <update id="setNowStatus">
         update User set statusNo = ${statusNo} where userNo = ${userNo};
     </update>
+
+    <update id="setStatusOn">
+        update User set statusOn = true where userNo = ${userNo};
+    </update>
+
+    <update id="setStatusOff">
+        update User set statusOn = false where userNo = ${userNo};
+    </update>
 </mapper>
 
 

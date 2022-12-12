@@ -16,24 +16,20 @@ public class AccessService {
     private final AccessRepository accessRepository;
     private final UserRepository userRepository;
 
-    public String canAccess (Authentication authentication, Integer accessUserNo) {
-        Claims principal = (Claims) authentication.getPrincipal();
-        String id = (String)principal.get("id");
-        int userNo = userRepository.getUserNoById(id);
+    public String canAccess (Integer userNo, Integer accessUserNo) {
+
         accessRepository.saveAccess(userNo, accessUserNo);
         return "success";
     }
 
-    public String cannotAccess (Authentication authentication, Integer accessUserNo) {
-        Claims principal = (Claims) authentication.getPrincipal();
-        String id = (String)principal.get("id");
-        int userNo = userRepository.getUserNoById(id);
+    public String cannotAccess (Integer userNo, Integer accessUserNo) {
+
         accessRepository.deleteAccess(userNo, accessUserNo);
         return "success";
     }
 
-    public List<UserDto> getAccessList(String id) {
-        Integer userNo = userRepository.getUserNoById(id);
+    public List<UserDto> getAccessList(Integer userNo) {
+
         return accessRepository.getAccessList(userNo);
     }
 

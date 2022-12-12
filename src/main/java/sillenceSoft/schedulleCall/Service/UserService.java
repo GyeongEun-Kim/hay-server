@@ -29,7 +29,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final GoogleUserInfo googleUserInfo;
     private final KakaoUserInfo kakaoUserInfo;
-    private final JWTProvider jwtProvider;
     private long AccessTokenValidTime= 60 * 30; //30분
     private long RefreshTokenValidTime = 60 * 60 * 24 * 60; //2개월
 
@@ -45,6 +44,7 @@ public class UserService {
                     .social(userRequestDto.getSocial())
                     .statusNo(-1)
                     .regTime(LocalDateTime.now())
+                    .statusOn(true)
                     .build();
              userRepository.login(userDto);//회원가입
         }
@@ -64,27 +64,26 @@ public class UserService {
         return id;
     }
 
-        public String jwtCheck (String accessToken, String refreshToken) {
-            String newAccessToken="";
-            Claims accessClaims = jwtProvider.validTokenAndReturnBody(accessToken);
-            if (accessClaims.isEmpty()) { //엑세스 토큰이 만료되었으면
-                Claims refreshClaims = jwtProvider.validTokenAndReturnBody(refreshToken);
-                if (refreshClaims.isEmpty()) { //리프레시 토큰도 만료
-                    System.out.println("다시 로그인 페이지로");
-                }
-                else { //엑세스 토큰만 새로 발급
-                    newAccessToken = jwtProvider.createAccessToken((String)refreshClaims.get("id"),
-                            (String) refreshClaims.get("regTime"));
-                }
-                return newAccessToken;
-            }
-            else return accessToken;
+//        public String jwtCheck (String accessToken, String refreshToken) {
+//            String newAccessToken="";
+//            Claims accessClaims = jwtProvider.validTokenAndReturnBody(accessToken);
+//            if (accessClaims.isEmpty()) { //엑세스 토큰이 만료되었으면
+//                Claims refreshClaims = jwtProvider.validTokenAndReturnBody(refreshToken);
+//                if (refreshClaims.isEmpty()) { //리프레시 토큰도 만료
+//                    System.out.println("다시 로그인 페이지로");
+//                }
+//                else { //엑세스 토큰만 새로 발급
+//                    newAccessToken = jwtProvider.createAccessToken((String)refreshClaims.get("id"),
+//                            (String) refreshClaims.get("regTime"));
+//                }
+//                return newAccessToken;
+//            }
+//            else return accessToken;
+//
+//        }
 
-        }
+    public void setNowStatus (Integer userNo, Integer statusNo) {
 
-    public void setNowStatus (String id, Integer statusNo) {
-
-        int userNo= userRepository.getUserNoById(id);
         userRepository.setNowStatus(userNo,statusNo);
 
     }

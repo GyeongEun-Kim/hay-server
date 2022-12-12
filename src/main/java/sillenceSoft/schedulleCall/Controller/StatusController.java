@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import sillenceSoft.schedulleCall.Dto.StatusDto;
+import sillenceSoft.schedulleCall.Service.JWTProvider;
 import sillenceSoft.schedulleCall.Service.ScheduleService;
 import sillenceSoft.schedulleCall.Service.StatusService;
 
@@ -24,29 +25,47 @@ import java.util.Map;
 public class StatusController {
     private final ScheduleService scheduleService;
     private final StatusService statusService;
+    private final JWTProvider jwtProvider;
 
     @GetMapping(value = "/status")
     public ResponseEntity getAllStatus (Authentication authentication) {
-        List<Map<String, String>> allStatusMemo = statusService.getAllStatus(authentication);
+        Integer userNo = jwtProvider.getUserNo(authentication);
+        List<Map<String, String>> allStatusMemo = statusService.getAllStatus(userNo);
         return new ResponseEntity(allStatusMemo, HttpStatus.OK);
     }
 
     @PostMapping("/status")
     public ResponseEntity addStatus (Authentication authentication, @RequestParam(name = "status") String newStatusMemo) {
-        return statusService.addStatus(authentication, newStatusMemo);
+        Integer userNo = jwtProvider.getUserNo(authentication);
+        return statusService.addStatus(userNo, newStatusMemo);
     }
 
     @DeleteMapping("/status")
     public String deleteStatus (Authentication authentication, @RequestParam(name = "statusNo") int statusNo) {
-
-        statusService.deleteStatus(authentication,statusNo);
+        Integer userNo = jwtProvider.getUserNo(authentication);
+        statusService.deleteStatus(userNo,statusNo);
         return "success";
     }
 
     @PutMapping("/status")
     public String updateStatus (Authentication authentication, @RequestParam(name = "status") String status,
                                 @RequestParam(name = "statusNo") int statusNo) {
-        statusService.updateStatus(authentication, status, statusNo);
+        Integer userNo = jwtProvider.getUserNo(authentication);
+        statusService.updateStatus(userNo, status, statusNo);
+        return "success";
+    }
+
+    @PostMapping("/status-on")
+    public String statusOn (Authentication authentication) {
+        Integer userNo = jwtProvider.getUserNo(authentication);
+        statusService.statusOn(userNo);
+        return "success";
+    }
+
+    @PostMapping("/status-off")
+    public String statusOff (Authentication authentication) {
+        Integer userNo = jwtProvider.getUserNo(authentication);
+        statusService.statusOff(userNo);
         return "success";
     }
 

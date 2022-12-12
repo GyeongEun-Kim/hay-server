@@ -18,6 +18,10 @@ public interface UserRepository {
 
     void setNowStatus (@Param("userNo") int userNo, @Param("statusNo") int statusNo);
 
+    void setStatusOn (@Param("userNo")Integer userNo);
+
+    void setStatusOff (@Param("userNo")Integer userNo);
+
 
 
 }

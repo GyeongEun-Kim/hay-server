@@ -4,4 +4,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="sillenceSoft.schedulleCall.Repository.ScheduleRepository">
+    <insert id="addSchedule" useGeneratedKeys="true" keyProperty="schedule.scheduleNo">
+        insert into Schedule(userNo, modDt, week, status, startHour, startMinute, endHour, endMinute)
+        values (${userNo}, #{schedule.modDt}, ${schedule.week}, #{schedule.status}, ${schedule.startTime.hour}, ${schedule.startTime.minute}, ${schedule.endTime.hour}, ${schedule.endTime.minute});
+    </insert>
+
+    <delete id="deleteSchedule">
+        delete from Schedule where scheduleNo =  ${scheduleNo}
+    </delete>
+
+    <select id="getSchedule" resultType="map">
+        select * from Schedule where userNo = ${userNo};
+    </select>
 </mapper>

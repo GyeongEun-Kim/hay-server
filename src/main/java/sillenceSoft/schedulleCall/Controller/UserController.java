@@ -74,9 +74,8 @@ public class UserController {
     @PostMapping("/nowStatus")
     public void setNowStatus (Authentication authentication,
                               @RequestParam(name = "statusNo") int statusNo) {
-        Claims principal = (Claims)authentication.getPrincipal();
-        String id = (String) principal.get("id");
-        userService.setNowStatus(id, statusNo);
+        Integer userNo = jwtProvider.getUserNo(authentication);
+        userService.setNowStatus(userNo, statusNo);
     }
 
 

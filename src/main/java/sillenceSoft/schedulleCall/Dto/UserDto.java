@@ -20,5 +20,6 @@ public class UserDto {
     private String social;
     private LocalDateTime regTime;
     private Integer statusNo;
+    private boolean statusOn;
 
 }

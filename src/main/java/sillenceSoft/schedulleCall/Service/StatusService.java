@@ -25,18 +25,14 @@ public class StatusService {
     private final UserRepository userRepository;
 
 
-    public List<Map<String,String>> getAllStatus (Authentication authentication) {
-        Claims principal = (Claims) authentication.getPrincipal();
-        String id = (String)principal.get("id");
-        int userNo = userRepository.getUserNoById(id);
+    public List<Map<String,String>> getAllStatus (Integer userNo) {
+
         List<Map<String,String>> allStatus = statusRepository.getAllStatus(userNo);
         return allStatus;
     }
 
-    public ResponseEntity addStatus (Authentication authentication, String newStatusMemo) {
-        Claims principal = (Claims) authentication.getPrincipal();
-        String id = (String)principal.get("id");
-        int userNo = userRepository.getUserNoById(id);
+    public ResponseEntity addStatus (Integer userNo, String newStatusMemo) {
+
         ResponseEntity responseEntity;
         StatusDto statusDto = StatusDto.builder()
                     .userNo(userNo)
@@ -55,13 +51,8 @@ public class StatusService {
     }
 
 
-    public void deleteStatus (Authentication authentication, int statusNo) {
-//        String accessToken = jwtProvider.getAccessToken(request);
-//        String id = (String)jwtProvider.validTokenAndReturnBody(accessToken).get("id");
-        //int userNo = userRepository.getUserNoById(id);
-        Claims principal = (Claims) authentication.getPrincipal();
-        String id = (String)principal.get("id");
-        int userNo = userRepository.getUserNoById(id);
+    public void deleteStatus (Integer userNo, int statusNo) {
+
         try {
             statusRepository.deleteStatus(statusNo);
         } catch (Exception e) {
@@ -69,11 +60,19 @@ public class StatusService {
         }
     }
 
-    public void updateStatus (Authentication authentication, String status, int statusNo) {
-        Claims principal = (Claims) authentication.getPrincipal();
-        String id = (String)principal.get("id");
-        int userNo = userRepository.getUserNoById(id);
+    public void updateStatus (Integer userNo, String status, int statusNo) {
+
         statusRepository.updateStatus(status,statusNo, LocalDateTime.now());
+    }
+
+    public void statusOn (Integer userNo) {
+
+        userRepository.setStatusOn(userNo);
+    }
+
+    public void statusOff (Integer userNo) {
+
+        userRepository.setStatusOff(userNo);
     }
 
 

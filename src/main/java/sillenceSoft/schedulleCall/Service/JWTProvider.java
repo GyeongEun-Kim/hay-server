@@ -1,10 +1,12 @@
 package sillenceSoft.schedulleCall.Service;
 
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import sillenceSoft.schedulleCall.Repository.UserRepository;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -14,9 +16,12 @@ import java.util.Date;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class JWTProvider {
     @Value("${spring.jwt.secret}")
     private String secretKey;
+
+    private final UserRepository userRepository;
 
     private long AccessTokenValidTime= 60 * 1 * 60 * 1000; //1시간
     private long RefreshTokenValidTime = 60* 24 *60 * 1000 * 30 * 2; //2개월
@@ -72,19 +77,6 @@ public class JWTProvider {
         }
         return claims;
     }
-//
-//    public boolean checkExpired (String token) {
-//        Date now = new Date();
-//        long nowTime = now.getTime();
-//        System.out.println("nowTime = " + nowTime);
-//        long expiredTime = Jwts
-//                .parser()
-//                .setClock()
-//        System.out.println("expiredTime = " + expiredTime);
-//        if (expiredTime- nowTime < 0)
-//            return true; //만료됨
-//        else return false;
-//    }
 
 
     public Authentication getAuthentication (String token) {
@@ -112,6 +104,13 @@ public class JWTProvider {
     public Optional<String> getRefreshToken (HttpServletRequest request) {
         Optional<String> refreshToken = Optional.ofNullable(request.getHeader("refreshToken"));
         return refreshToken;
+    }
+
+    public Integer getUserNo (Authentication authentication) {
+        Claims principal = (Claims) authentication.getPrincipal();
+        String id = (String)principal.get("id");
+        int userNo = userRepository.getUserNoById(id);
+        return userNo;
     }
 
 
