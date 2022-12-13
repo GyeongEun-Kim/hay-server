@@ -71,11 +71,11 @@ public class UserController {
 
     }
 
-    @PostMapping("/nowStatus")
-    public void setNowStatus (Authentication authentication,
+    @PostMapping("/nowStatus") //현재 상태글 변경
+    public String setNowStatus (Authentication authentication,
                               @RequestParam(name = "statusNo") int statusNo) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        userService.setNowStatus(userNo, statusNo);
+        return userService.setNowStatus(userNo, statusNo);
     }
 
 

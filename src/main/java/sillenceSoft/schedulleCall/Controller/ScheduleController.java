@@ -25,21 +25,21 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @GetMapping(value = "/schedule")
-    public List<ScheduleDto> getMySchedule (Authentication authentication) {
+    public Object getMySchedule (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
         return scheduleService.getMySchedule(userNo);
     }
 
     @PostMapping(value = "/schedule", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addSchedule (Authentication authentication, @RequestBody ScheduleDto schedule) {
+    public String addSchedule (Authentication authentication, @RequestBody ScheduleDto schedule) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        scheduleService.addSchedule(userNo, schedule);
+        return scheduleService.addSchedule(userNo, schedule);
 
     }
 
     @DeleteMapping(value = "schedule")
-    public void deleteSchedule (Authentication authentication,@RequestParam Integer scheduleNo) {
+    public String deleteSchedule (Authentication authentication,@RequestParam Integer scheduleNo) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        scheduleService.deleteSchedule(userNo, scheduleNo);
+        return scheduleService.deleteSchedule(userNo, scheduleNo);
     }
 }

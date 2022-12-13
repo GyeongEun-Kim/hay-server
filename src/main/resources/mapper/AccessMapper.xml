@@ -10,8 +10,7 @@
         where userNo = (
             select accessUserNo
             from Access
-            where accessUserNo = ${ accessUserNo }
-            );
+            where UserNo = ${ accessUserNo } );
     </select>
 
 

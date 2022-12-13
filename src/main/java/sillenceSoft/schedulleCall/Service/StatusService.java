@@ -45,34 +45,61 @@ public class StatusService {
         }
         catch (Exception e) {
             e.printStackTrace();
-            responseEntity = new ResponseEntity("failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            responseEntity = new ResponseEntity("fail to add status", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseEntity;
     }
 
 
-    public void deleteStatus (Integer userNo, int statusNo) {
-
+    public String deleteStatus ( int statusNo) {
+        String msg;
         try {
-            statusRepository.deleteStatus(statusNo);
+            statusRepository.deleteStatus( statusNo);
+            msg="success";
         } catch (Exception e) {
             e.printStackTrace();
+            msg="fail to delete status";
         }
+        return msg;
     }
 
-    public void updateStatus (Integer userNo, String status, int statusNo) {
-
-        statusRepository.updateStatus(status,statusNo, LocalDateTime.now());
+    public String  updateStatus (String status, int statusNo) {
+        String msg;
+        try {
+            statusRepository.updateStatus(status, statusNo, LocalDateTime.now());
+            msg="success";
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg="fail to update status";
+        }
+        return msg;
     }
 
-    public void statusOn (Integer userNo) {
-
-        userRepository.setStatusOn(userNo);
+    public String statusOn (Integer userNo) {
+        String msg;
+        try {
+            userRepository.setStatusOn(userNo);
+            msg="success";
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg="fail to set auto status";
+        }
+        return msg;
     }
 
-    public void statusOff (Integer userNo) {
-
-        userRepository.setStatusOff(userNo);
+    public String statusOff (Integer userNo) {
+        String msg;
+        try {
+            userRepository.setStatusOff(userNo);
+            msg="success";
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg="fail to set auto status";
+        }
+        return msg;
     }
 
 

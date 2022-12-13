@@ -44,22 +44,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 jwtProvider.setHeaderRefreshToken(refreshToken,response);
                 filterChain.doFilter(request, response);
             }
-            // 엑세스 토큰이 만료된 상황 | 리프레시 토큰은 유효한 상황 -> 재발급
+            // 엑세스 토큰이 만료된 상황 | 리프레시 토큰은 유효한 상황 -> 둘다 재발급
             else if (jwtProvider.validTokenAndReturnBody(accessToken)==null && jwtProvider.validTokenAndReturnBody(refreshToken)!=null) {
                 Claims claims = jwtProvider.validTokenAndReturnBody(refreshToken);
-                /// 리프레시 토큰 저장소 존재유무 확인
-                // boolean isRefreshToken = jwtProvider.existsRefreshToken(refreshToken);
-                 //   if (validateRefreshToken && isRefreshToken) {
                 String id = (String)claims.get("id");
                 String regTime=(String) claims.get("regTime");
-                System.out.println("id = " + id);
-                System.out.println("regTime = " + regTime);
-                /// 토큰 발급
+
+                /// 토큰 발급 (access, refresh 둘다 재발급)
                 String newAccessToken = jwtProvider.createAccessToken(id, regTime);
-                /// 헤더에 엑세스 토큰 추가
+                String newRefreshToken = jwtProvider.createRefreshToken(id, regTime);
+                /// 헤더에 엑세스, 리프레시 토큰 추가
                 jwtProvider.setHeaderAccessToken(newAccessToken, response);
-                jwtProvider.setHeaderRefreshToken(refreshToken,response);
-                System.out.println("리프레시토큰 유효, 엑세스 새로 발급");
+                jwtProvider.setHeaderRefreshToken(newRefreshToken,response);
+
                 this.setAuthentication(newAccessToken);
 
                 filterChain.doFilter(request, response);
@@ -72,10 +69,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         }
 
-     //SecurityContext 에 Authentication 객체를 저장합니다.
     public void setAuthentication(String token) {
         // 토큰으로부터 유저 정보를 받아옵니다.
-        System.out.println("get authentication");
+       // System.out.println("get authentication");
         Authentication authentication = jwtProvider.getAuthentication(token);
         // SecurityContext 에 Authentication 객체를 저장합니다.
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -43,7 +43,7 @@ public class StatusController {
     @DeleteMapping("/status")
     public String deleteStatus (Authentication authentication, @RequestParam(name = "statusNo") int statusNo) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        statusService.deleteStatus(userNo,statusNo);
+        statusService.deleteStatus(statusNo);
         return "success";
     }
 
@@ -51,22 +51,20 @@ public class StatusController {
     public String updateStatus (Authentication authentication, @RequestParam(name = "status") String status,
                                 @RequestParam(name = "statusNo") int statusNo) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        statusService.updateStatus(userNo, status, statusNo);
+        statusService.updateStatus(status, statusNo);
         return "success";
     }
 
-    @PostMapping("/status-on")
+    @PostMapping("/statusOn")
     public String statusOn (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        statusService.statusOn(userNo);
-        return "success";
+        return statusService.statusOn(userNo);
     }
 
-    @PostMapping("/status-off")
+    @PostMapping("/statusOff")
     public String statusOff (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        statusService.statusOff(userNo);
-        return "success";
+        return statusService.statusOff(userNo);
     }
 
 

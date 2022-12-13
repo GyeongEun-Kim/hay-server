@@ -17,20 +17,37 @@ public class AccessService {
     private final UserRepository userRepository;
 
     public String canAccess (Integer userNo, Integer accessUserNo) {
-
-        accessRepository.saveAccess(userNo, accessUserNo);
-        return "success";
+        String msg;
+        try {
+            accessRepository.saveAccess(userNo, accessUserNo);
+            msg="success";
+        }catch (Exception e ) {
+            e.printStackTrace();
+            msg="fail to allow access";
+        }
+        return msg;
     }
 
     public String cannotAccess (Integer userNo, Integer accessUserNo) {
-
-        accessRepository.deleteAccess(userNo, accessUserNo);
-        return "success";
+        String msg;
+        try {
+            accessRepository.deleteAccess(userNo, accessUserNo);
+            msg="success";
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg="fail to disallow access";
+        }
+        return msg;
     }
 
-    public List<UserDto> getAccessList(Integer userNo) {
+    public Object getAccessList(Integer userNo) {
+        try {
+            return accessRepository.getAccessList(userNo);
+        }catch (Exception e) {
+            return "fail to get access list";
+        }
 
-        return accessRepository.getAccessList(userNo);
     }
 
 }

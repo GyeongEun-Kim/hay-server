@@ -37,7 +37,7 @@ public class AccessController {
     }
 
     @GetMapping(value = "/access")
-    public List<UserDto> getAccessList(Authentication authentication) {
+    public Object getAccessList(Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
         return accessService.getAccessList(userNo);
 

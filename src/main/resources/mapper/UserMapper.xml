@@ -9,8 +9,9 @@
     <insert id="login"
             parameterType="sillenceSoft.schedulleCall.Dto.UserDto"
             useGeneratedKeys="true" keyProperty = "userNo">
-        insert into User (id, phone, social, regTime, statusNo) values
-        (#{userDto.id}, #{userDto.phone}, #{userDto.social}, #{userDto.regTime}, #{userDto.statusNo});
+        insert into User (id, phone, social, regTime, statusNo, statusOn) values
+        (#{userDto.id}, #{userDto.phone}, #{userDto.social}, #{userDto.regTime}, #{userDto.statusNo},
+        #{userDto.statusOn});
     </insert>
 
     <select id="findById"
