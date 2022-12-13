@@ -7,10 +7,9 @@
     <select id="getAccessList" parameterType="Integer" resultType="sillenceSoft.schedulleCall.Dto.UserDto">
         select *
         from User
-        where userNo = (
-            select accessUserNo
-            from Access
-            where UserNo = ${ accessUserNo } );
+        join Access
+        ON User.userNo = Access.accessUserNo
+        WHERE Access.userNo = ${userNo};
     </select>
 
 
