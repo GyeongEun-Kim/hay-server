@@ -20,11 +20,10 @@ public class GoogleUserInfo implements OAuthUserInfo{
         try {
             URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-
+            conn.setRequestMethod("GET");
             //    요청에 필요한 Header에 포함될 내용
 
-            conn.setRequestProperty("Authorization", "Bearer " + token);
+          //  conn.setRequestProperty("Authorization", "Bearer " + token);
 
             int responseCode = conn.getResponseCode(); //요청 전송
             System.out.println("responseCode : " + responseCode);

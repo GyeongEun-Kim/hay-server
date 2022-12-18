@@ -20,12 +20,12 @@ public class KakaoUserInfo implements OAuthUserInfo{
 
     @Override
     public String getUserInfo(String token) {
-        String reqURL = "https://kapi.kakao.com/v1/user/";
+        String reqURL = "https://kapi.kakao.com/v2/user/me";
         String id = null;
         try {
             URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
+            conn.setRequestMethod("GET");
 
             //    요청에 필요한 Header에 포함될 내용
 
