@@ -14,7 +14,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
-    private final ScheduleContentRepository scheduleContentRepository;
 
 
     public Object getMySchedule(Integer userNo) {
