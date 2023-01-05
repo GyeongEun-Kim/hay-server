@@ -26,7 +26,7 @@
         update Status set status = #{status}, modDt = #{modDt} where statusNo = ${statusNo};
     </update>
 
-    <select id="getNowStatus" resultType="String">
+    <select id="getNowStatus" resultType="map">
         select b.status
         from Status as b
         join User as a

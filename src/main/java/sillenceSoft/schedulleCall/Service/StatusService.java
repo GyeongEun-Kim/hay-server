@@ -12,6 +12,8 @@ import sillenceSoft.schedulleCall.Repository.StatusRepository;
 import sillenceSoft.schedulleCall.Repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -105,17 +107,21 @@ public class StatusService {
         return msg;
     }
 
-    public String getOthersStatus (Integer userNo, String phone) {
+    public Map<String,String> getOthersStatus (Integer userNo, String phone, HttpServletResponse res) throws IOException {
         //userNo유저가  phone유저의 상태를 보려고 하는상황
         Integer check = accessRepository.checkAccessOrNot(sha256.encrypt( phone), userNo);
         System.out.println("check="+check);
-        String result;
+        Map<String,String> result = null;
         if (check != null) {
             result = statusRepository.getNowStatus(check);
-            if (result == null) return "사용자의 현재 상태가 존재하지 않습니다";
+            if (result == null)  {
+                res.sendError(404,"사용자의 현재 스케줄이 존재하지 않습니다");
+                return null;
+            }
             else return result;
         } else { //접근 자체가 불가할때
-            return "사용자의 현재 상태가 존재하지 않습니다"; //숨김 당해서 안보이는거지만 그냥 상태가 없다고 출력함.
+            res.sendError(404,"사용자의 현재 스케줄이 존재하지 않습니다");
+            return null;
         }
     }
 

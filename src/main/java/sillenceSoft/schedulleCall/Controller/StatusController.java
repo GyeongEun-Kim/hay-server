@@ -13,6 +13,8 @@ import sillenceSoft.schedulleCall.Service.ScheduleService;
 import sillenceSoft.schedulleCall.Service.StatusService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -68,9 +70,9 @@ public class StatusController {
     }
 
     @GetMapping ("/status/others")
-    public String getOthersStatus (Authentication authentication, @RequestParam(name = "phone") String phone) {
+    public Map<String,String> getOthersStatus (Authentication authentication, @RequestParam(name = "phone") String phone, HttpServletResponse res) throws IOException {
         Integer thisUserNo = jwtProvider.getUserNo(authentication);
-        return statusService.getOthersStatus(thisUserNo, phone);
+        return statusService.getOthersStatus(thisUserNo, phone, res);
     }
 
 

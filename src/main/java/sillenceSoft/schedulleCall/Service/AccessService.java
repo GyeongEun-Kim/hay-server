@@ -23,6 +23,7 @@ public class AccessService {
         try {
             String encrypt = sha256.encrypt(accessUserPhone);
             Integer accessUserNo = userRepository.findByPhone(encrypt);
+            System.out.println("accessUserNo="+ accessUserNo);
             accessRepository.saveAccess(userNo, accessUserNo);
             msg="success";
         }catch (Exception e ) {
@@ -37,6 +38,7 @@ public class AccessService {
         try {
             String encrypt = sha256.encrypt(accessUserPhone);
             Integer accessUserNo =userRepository.findByPhone(encrypt);
+            System.out.println("accessUserNo="+ accessUserNo);
             accessRepository.deleteAccess(userNo, accessUserNo);
             msg="success";
         }
