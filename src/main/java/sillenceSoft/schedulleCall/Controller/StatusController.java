@@ -67,6 +67,12 @@ public class StatusController {
         return statusService.statusOff(userNo);
     }
 
+    @GetMapping ("/status/others")
+    public String getOthersStatus (Authentication authentication, @RequestParam(name = "phone") String phone) {
+        Integer thisUserNo = jwtProvider.getUserNo(authentication);
+        return statusService.getOthersStatus(thisUserNo, phone);
+    }
+
 
 
 }

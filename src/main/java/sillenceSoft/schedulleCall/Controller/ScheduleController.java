@@ -15,7 +15,10 @@ import sillenceSoft.schedulleCall.Service.JWTProvider;
 import sillenceSoft.schedulleCall.Service.ScheduleService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,5 +44,12 @@ public class ScheduleController {
     public String deleteSchedule (Authentication authentication,@RequestParam Integer scheduleNo) {
         Integer userNo = jwtProvider.getUserNo(authentication);
         return scheduleService.deleteSchedule(userNo, scheduleNo);
+    }
+
+    @GetMapping("/schedule/others")
+    public Object getOthersSchedule (Authentication authentication, @RequestParam(name = "phone") String phone
+                                                       ,HttpServletResponse res) throws IOException {
+        Integer thisUserNo = jwtProvider.getUserNo(authentication);
+        return scheduleService.getOthersSchedule(thisUserNo, phone, res);
     }
 }

@@ -20,4 +20,12 @@
     <delete id="deleteAccess">
         delete from Access where accessUserNo = ${accessUserNo} and userNo = ${userNo} ;
     </delete>
+
+    <select id="checkAccessOrNot" resultType="Integer">
+        select a.userNo
+        from (select userNo from User where phone=#{phone}) as a
+        join Access as b
+        on a.userNo = b.userNo
+        WHERE b.accessUserNo = ${userNo};
+    </select>
 </mapper>

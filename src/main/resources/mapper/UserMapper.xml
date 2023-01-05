@@ -37,6 +37,10 @@
     <update id="setStatusOff">
         update User set statusOn = false where userNo = ${userNo};
     </update>
+
+    <select id="findByPhone" resultType="Integer">
+        select userNo from User where phone=#{phone};
+    </select>
 </mapper>
 
 

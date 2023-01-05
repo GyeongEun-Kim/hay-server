@@ -19,6 +19,6 @@ public interface StatusRepository  {
     void addStatus (@Param("statusDto")StatusDto statusDto);
     void deleteStatus (@Param("statusNo") int statusNo);
     void updateStatus (@Param("status") String status,@Param("statusNo") int StatusNo, @Param("modDt")LocalDateTime modDt);
-
+    String getNowStatus (Integer userNo);
 
 }

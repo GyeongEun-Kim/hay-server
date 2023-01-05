@@ -15,10 +15,14 @@ import java.util.List;
 public class AccessService {
     private final AccessRepository accessRepository;
     private final UserRepository userRepository;
+    private final SHA_256 sha256;
 
-    public String canAccess (Integer userNo, Integer accessUserNo) {
+    public String canAccess (Integer userNo, String accessUserPhone) {
         String msg;
+
         try {
+            String encrypt = sha256.encrypt(accessUserPhone);
+            Integer accessUserNo = userRepository.findByPhone(encrypt);
             accessRepository.saveAccess(userNo, accessUserNo);
             msg="success";
         }catch (Exception e ) {
@@ -28,9 +32,11 @@ public class AccessService {
         return msg;
     }
 
-    public String cannotAccess (Integer userNo, Integer accessUserNo) {
+    public String cannotAccess (Integer userNo, String accessUserPhone) {
         String msg;
         try {
+            String encrypt = sha256.encrypt(accessUserPhone);
+            Integer accessUserNo =userRepository.findByPhone(encrypt);
             accessRepository.deleteAccess(userNo, accessUserNo);
             msg="success";
         }

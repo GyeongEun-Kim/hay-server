@@ -23,17 +23,17 @@ public class AccessController {
     //디폴트 : 모두 숨김
     @PostMapping(value = "/access") // 숨김 해제
     public String canAccess (Authentication authentication,
-                             @RequestParam(name = "accessUserNo") Integer accessUserNo) {
+                             @RequestParam(name = "accessUserPhone") String accessUserPhone) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        return accessService.canAccess(userNo, accessUserNo);
+        return accessService.canAccess(userNo, accessUserPhone);
     }
 
     @DeleteMapping(value = "/access") //숨김
     public String cannotAccess (Authentication authentication,
-                                @RequestParam(name = "accessUserNo") Integer accessUserNo)
+                                @RequestParam(name = "accessUserPhone") String accessUserPhone)
     {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        return accessService.cannotAccess(userNo, accessUserNo);
+        return accessService.cannotAccess(userNo, accessUserPhone);
     }
 
     @GetMapping(value = "/access")

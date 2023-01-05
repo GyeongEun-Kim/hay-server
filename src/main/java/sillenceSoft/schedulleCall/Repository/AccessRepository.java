@@ -14,4 +14,5 @@ public interface AccessRepository  {
     List<UserDto> getAccessList (Integer userNo);
     void saveAccess (@Param(value = "userNo") Integer userNo, @Param(value = "accessUserNo") Integer accessUserNo);
     void deleteAccess (@Param(value = "userNo")Integer userNo, @Param(value = "accessUserNo")Integer accessUserNo);
+    Integer checkAccessOrNot (@Param(value="phone") String phone, @Param(value="userNo") Integer userNo );
 }

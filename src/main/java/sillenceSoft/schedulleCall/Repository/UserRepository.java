@@ -22,6 +22,8 @@ public interface UserRepository {
 
     void setStatusOff (@Param("userNo")Integer userNo);
 
+    Integer findByPhone(String phone);
+
 
 
 }

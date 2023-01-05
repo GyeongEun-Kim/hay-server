@@ -1,19 +1,26 @@
 package sillenceSoft.schedulleCall.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import sillenceSoft.schedulleCall.Dto.ScheduleDto;
+import sillenceSoft.schedulleCall.Repository.AccessRepository;
 import sillenceSoft.schedulleCall.Repository.ScheduleRepository;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
+    private final AccessRepository accessRepository;
+    private final SHA_256 sha256;
 
 
     public Object getMySchedule(Integer userNo) {
@@ -59,6 +66,23 @@ public class ScheduleService {
             msg="fail to delete schedule";
         }
         return msg;
+        }
+
+        public Object getOthersSchedule (Integer userNo, String phone, HttpServletResponse res) throws IOException {
+            Integer check = accessRepository.checkAccessOrNot(sha256.encrypt( phone), userNo);
+            System.out.println("userNo = "+check);
+
+            if (check != null) {
+                Object mySchedule = getMySchedule(check);
+                if (mySchedule == null) {
+                    res.sendError(404,"사용자의 현재 스케줄이 존재하지 않습니다");
+                    return null;
+                }
+                else return mySchedule;
+            } else { //접근 자체가 불가할때
+                res.sendError(404,"사용자의 현재 스케줄이 존재하지 않습니다");//숨김 당해서 안보이는거지만 그냥 상태가 없다고 출력함.
+                return null;
+            }
         }
 }
 
