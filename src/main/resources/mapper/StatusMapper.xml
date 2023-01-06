@@ -31,7 +31,24 @@
         from Status as b
         join User as a
         on a.statusNo = b.statusNo
-        where a.userNo=${userNo};
+        where a.userNo=${userNo} ;
+    </select>
+
+    <select id="getAllOthersStatus" resultType="map">
+        select b.status, a.phone
+        from (select statusNo, phone
+            from Access as a
+            join User as b
+            on a.userNo = b.userNo
+            where accessUserNo = ${userNo}) as a
+        join Status as b
+        on a.statusNo = b.statusNo;
+    </select>
+
+    <select id="checkIfPresent">
+        select isnull(statusNo)
+        from Status
+        where status = #{status} and userNo=${userNo};
     </select>
 
 </mapper>

@@ -52,4 +52,10 @@ public class ScheduleController {
         Integer thisUserNo = jwtProvider.getUserNo(authentication);
         return scheduleService.getOthersSchedule(thisUserNo, phone, res);
     }
+
+    @PostMapping("/schedule/status") //스케줄 상태로 표시
+    public void toScheduleStatus (Authentication authentication) {
+        Integer userNo = jwtProvider.getUserNo(authentication);
+        scheduleService.toScheduleStatus(userNo);
+    }
 }

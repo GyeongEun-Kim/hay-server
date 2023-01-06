@@ -12,5 +12,6 @@ public interface ScheduleRepository {
     List<Map<String,Object>> getSchedule (Integer UserNo);
     void deleteSchedule (@Param(value = "userNo") Integer userNo,@Param(value = "scheduleNo") Integer scheduleNo);
     void addSchedule (@Param(value = "userNo") Integer userNo, @Param(value = "schedule") ScheduleDto schedule);
-
+    Integer getScheduleStatus(@Param(value = "userNo")Integer userNo, @Param(value = "week") Integer week,
+            @Param(value = "hour")Integer hour, @Param(value = "minute")Integer minute);
 }

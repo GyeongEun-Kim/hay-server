@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,9 +71,14 @@ public class StatusController {
     }
 
     @GetMapping ("/status/others")
-    public Map<String,String> getOthersStatus (Authentication authentication, @RequestParam(name = "phone") String phone, HttpServletResponse res) throws IOException {
+    public List<Map<String,String>> getOthersStatus (Authentication authentication, @RequestParam(name = "phone", required = false) String phone, HttpServletResponse res) throws IOException {
         Integer thisUserNo = jwtProvider.getUserNo(authentication);
-        return statusService.getOthersStatus(thisUserNo, phone, res);
+        if (phone!=null) {
+            List<Map<String,String>> result = new ArrayList<>();
+            result.add(statusService.getOthersStatus(thisUserNo, phone, res));
+            return result;
+        }
+        else return statusService.getAllOthersStatus(thisUserNo);
     }
 
 

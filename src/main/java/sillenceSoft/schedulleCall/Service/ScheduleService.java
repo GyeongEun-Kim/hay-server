@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import sillenceSoft.schedulleCall.Dto.ScheduleDto;
+import sillenceSoft.schedulleCall.Dto.StatusDto;
 import sillenceSoft.schedulleCall.Repository.AccessRepository;
 import sillenceSoft.schedulleCall.Repository.ScheduleRepository;
+import sillenceSoft.schedulleCall.Repository.StatusRepository;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +24,9 @@ import java.util.Optional;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final AccessRepository accessRepository;
+    private final StatusRepository statusRepository;
     private final SHA_256 sha256;
+    private final UserService userService;
 
 
     public Object getMySchedule(Integer userNo) {
@@ -44,6 +50,13 @@ public class ScheduleService {
 
     public String addSchedule(Integer userNo, ScheduleDto schedule) {
         String msg;
+        if (!statusRepository.checkIfPresent(userNo, schedule.getStatus())) {
+            statusRepository.addStatus(StatusDto.builder()              //status에 없는 상태면 추가하기
+                    .userNo(userNo)
+                    .status(schedule.getStatus())
+                    .modDt(LocalDateTime.now())
+                    .build());
+        }
         try {
             scheduleRepository.addSchedule(userNo, schedule);
             msg="success";
@@ -73,16 +86,28 @@ public class ScheduleService {
             System.out.println("userNo = "+check);
 
             if (check != null) {
-                Object mySchedule = getMySchedule(check);
-                if (mySchedule == null) {
+                List<Map<String,Object>> mySchedule = (List<Map<String,Object>>)getMySchedule(check);
+                if (mySchedule.size()==0) {
                     res.sendError(404,"사용자의 현재 스케줄이 존재하지 않습니다");
                     return null;
                 }
                 else return mySchedule;
             } else { //접근 자체가 불가할때
-                res.sendError(404,"사용자의 현재 스케줄이 존재하지 않습니다");//숨김 당해서 안보이는거지만 그냥 상태가 없다고 출력함.
+                res.sendError(404,"해당 사용자의 스케줄을 볼 수 없습니다");//숨김 당해서 안보이는거지만 그냥 상태가 없다고 출력함.
                 return null;
             }
+        }
+
+        public void toScheduleStatus(Integer userNo) {
+            LocalDateTime date = LocalDateTime.now();
+            DayOfWeek dayOfWeek = date.getDayOfWeek();//요일 (월요일1, 일요일 7)
+            int hour = date.getHour();
+            int minute = date.getMinute();
+            int week = dayOfWeek.getValue();
+            if (week == 7 ) week= 0;
+            Integer statusNo = scheduleRepository.getScheduleStatus(userNo, week, hour, minute );
+            userService.setNowStatus(userNo, statusNo);
+
         }
 }
 

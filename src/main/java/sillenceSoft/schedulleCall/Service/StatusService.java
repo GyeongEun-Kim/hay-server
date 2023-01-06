@@ -115,14 +115,19 @@ public class StatusService {
         if (check != null) {
             result = statusRepository.getNowStatus(check);
             if (result == null)  {
-                res.sendError(404,"사용자의 현재 스케줄이 존재하지 않습니다");
+                res.sendError(404,"사용자의 현재 상태가 존재하지 않습니다");
                 return null;
             }
             else return result;
         } else { //접근 자체가 불가할때
-            res.sendError(404,"사용자의 현재 스케줄이 존재하지 않습니다");
+            res.sendError(404,"해당 사용자의 상태를 볼 수 없습니다");
             return null;
         }
+    }
+
+    public List<Map<String,String>> getAllOthersStatus (Integer thisUserNo) {
+        List<Map<String, String>> allOthersStatus = statusRepository.getAllOthersStatus(thisUserNo);
+        return allOthersStatus;
     }
 
 

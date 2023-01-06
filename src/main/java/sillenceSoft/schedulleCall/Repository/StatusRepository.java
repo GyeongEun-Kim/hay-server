@@ -20,5 +20,7 @@ public interface StatusRepository  {
     void deleteStatus (@Param("statusNo") int statusNo);
     void updateStatus (@Param("status") String status,@Param("statusNo") int StatusNo, @Param("modDt")LocalDateTime modDt);
     Map<String,String> getNowStatus (Integer userNo);
+    List<Map<String,String>> getAllOthersStatus(Integer userNo);
+    boolean checkIfPresent (@Param(value = "userNo") Integer userNo, @Param(value = "status") String status);
 
 }

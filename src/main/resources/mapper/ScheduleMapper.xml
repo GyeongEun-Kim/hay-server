@@ -16,4 +16,13 @@
     <select id="getSchedule" resultType="map">
         select * from Schedule where userNo = ${userNo};
     </select>
+
+    <select id="getScheduleStatus" resultType="Integer">
+        select b.statusNo
+        from Schedule as a
+        join Status as b
+        on a.status = b.status
+        where a.week=${week} and ${hour} between a.startHour and a.endHour and ${minute} between a.startMinute and a.endMinute
+        and b.userNo=${userNo};
+    </select>
 </mapper>
