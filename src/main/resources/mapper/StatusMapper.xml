@@ -45,8 +45,8 @@
         on a.statusNo = b.statusNo;
     </select>
 
-    <select id="checkIfPresent">
-        select isnull(statusNo)
+    <select id="checkIfPresent" resultType="Integer">
+        select count(statusNo)
         from Status
         where status = #{status} and userNo=${userNo};
     </select>

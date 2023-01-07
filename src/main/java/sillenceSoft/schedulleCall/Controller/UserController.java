@@ -30,6 +30,7 @@ import sillenceSoft.schedulleCall.Service.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 
@@ -66,9 +67,9 @@ public class UserController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("/jwt-check") //토큰 유효시간 확인과 연장
-    public void jwtCheck (Authentication authentication, HttpServletResponse response) {
-
+    @PostMapping("/jwt-check") //리프레시 토큰의 유효성 확인
+    public void jwtCheck (HttpServletRequest request,HttpServletResponse response) throws IOException {
+        userService.jwtCheck(request,response);
     }
 
     @PostMapping("/nowStatus") //현재 상태글 변경

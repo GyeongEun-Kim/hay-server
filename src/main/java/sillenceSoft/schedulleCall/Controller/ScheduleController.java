@@ -58,4 +58,10 @@ public class ScheduleController {
         Integer userNo = jwtProvider.getUserNo(authentication);
         scheduleService.toScheduleStatus(userNo);
     }
+
+    @DeleteMapping("/schedule/status") //스케줄 상태로 표시 해제
+    public void cancelScheduleStatus (Authentication authentication) {
+        Integer userNo = jwtProvider.getUserNo(authentication);
+        scheduleService.cancelScheduleStatus(userNo);
+    }
 }

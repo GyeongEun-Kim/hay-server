@@ -18,11 +18,14 @@
     </select>
 
     <select id="getScheduleStatus" resultType="Integer">
-        select b.statusNo
-        from Schedule as a
-        join Status as b
-        on a.status = b.status
-        where a.week=${week} and ${hour} between a.startHour and a.endHour and ${minute} between a.startMinute and a.endMinute
-        and b.userNo=${userNo};
+        <![CDATA[
+            select distinct b.statusNo
+            from Schedule as a
+            join Status as b
+            on a.status = b.status
+            where a.week=${week} and b.userNo=${userNo} and
+            ${hour} < a.endHour or (${hour} = a.endHour and ${minute} <= a.endMinute);
+
+        ]]>
     </select>
 </mapper>

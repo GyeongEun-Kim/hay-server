@@ -41,6 +41,14 @@
     <select id="findByPhone" resultType="Integer">
         select userNo from User where phone=#{phone};
     </select>
+
+    <update id="cancelNowStatus">
+        update User set statusNo = null where userNo=${userNo}
+    </update>
+
+    <select id="getStatusNo" resultType="Integer">
+        select statusNo from User where userNo=${userNo};
+    </select>
 </mapper>
 
 

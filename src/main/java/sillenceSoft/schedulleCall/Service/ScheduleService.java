@@ -50,7 +50,7 @@ public class ScheduleService {
 
     public String addSchedule(Integer userNo, ScheduleDto schedule) {
         String msg;
-        if (!statusRepository.checkIfPresent(userNo, schedule.getStatus())) {
+        if (statusRepository.checkIfPresent(userNo, schedule.getStatus())==0) {
             statusRepository.addStatus(StatusDto.builder()              //status에 없는 상태면 추가하기
                     .userNo(userNo)
                     .status(schedule.getStatus())
@@ -108,6 +108,10 @@ public class ScheduleService {
             Integer statusNo = scheduleRepository.getScheduleStatus(userNo, week, hour, minute );
             userService.setNowStatus(userNo, statusNo);
 
+        }
+
+        public void cancelScheduleStatus (Integer userNo) {
+            userService.cancelNowStatus(userNo);
         }
 }
 
