@@ -23,8 +23,8 @@ public class JWTProvider {
 
     private final UserRepository userRepository;
 
-   // private long AccessTokenValidTime= 60 * 1 * 60 * 1000; //1시간
-   private long AccessTokenValidTime= 1 * 1 * 60 * 1000;//1분
+    private long AccessTokenValidTime= 60 * 1 * 60 * 1000; //1시간
+   //private long AccessTokenValidTime= 1 * 1 * 60 * 1000;//1분
     private long RefreshTokenValidTime = 60* 24 *60 * 1000 * 30 * 2; //2개월
 
     // 객체 초기화, secretKey를 Base64로 인코딩한다.
