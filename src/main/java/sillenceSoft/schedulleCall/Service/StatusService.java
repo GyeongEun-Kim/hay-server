@@ -111,9 +111,10 @@ public class StatusService {
     public Map<String,String> getOthersStatus (Integer userNo, String phone, HttpServletResponse res) throws IOException {
         //userNo유저가  phone유저의 상태를 보려고 하는상황
         Integer check = accessRepository.checkAccessOrNot(sha256.encrypt( phone), userNo);
+        boolean statusOn = (boolean)userRepository.getStatusOn(userRepository.findByPhone(phone)).get("statusOn");
         System.out.println("check="+check);
         Map<String,String> result = null;
-        if (check != null) {
+        if (check != null && statusOn==true) {
             result = statusRepository.getNowStatus(check);
             if (result == null)  {
                 res.sendError(404,"사용자의 현재 상태가 존재하지 않습니다");
