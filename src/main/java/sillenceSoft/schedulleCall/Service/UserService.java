@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Service
@@ -28,7 +30,7 @@ public class UserService {
 
     public UserDto login(UserRequestDto userRequestDto) throws NoSuchAlgorithmException {
         String id = sha256.encrypt(getIdBySocial(userRequestDto));
-        //String id = sha256.encrypt(""); //로컬테스트용
+        //String id = sha256.encrypt("테스트ㅡㅡ"); //로컬테스트용
         UserDto userDto = userRepository.findById(id);
 
         if (userDto == null) { //신규회원인 경우
@@ -103,5 +105,9 @@ public class UserService {
 
             }
         }
+    }
+
+    public Map<String,Object> getStatusOn (Integer userNo) {
+        return  userRepository.getStatusOn(userNo);
     }
 }

@@ -55,6 +55,7 @@ public class ScheduleService {
                     .userNo(userNo)
                     .status(schedule.getStatus())
                     .modDt(LocalDateTime.now())
+                    .isFromSchedule(true)
                     .build());
         }
         try {

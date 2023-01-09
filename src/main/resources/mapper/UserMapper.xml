@@ -49,6 +49,14 @@
     <select id="getStatusNo" resultType="Integer">
         select statusNo from User where userNo=${userNo};
     </select>
+
+    <select id="getStatusOn" resultType="map">
+        select phone, statusOn from User where userNo=${userNo};
+    </select>
+
+    <select id="getNowStatus" resultType="Integer">
+        select statusNo from User where userNo=${userNo};
+    </select>
 </mapper>
 
 

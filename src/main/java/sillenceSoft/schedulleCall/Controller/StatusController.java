@@ -33,7 +33,7 @@ public class StatusController {
     @GetMapping(value = "/status")
     public ResponseEntity getAllStatus (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        List<Map<String, String>> allStatusMemo = statusService.getAllStatus(userNo);
+        List<Map<String, Object>> allStatusMemo = statusService.getAllStatus(userNo);
         return new ResponseEntity(allStatusMemo, HttpStatus.OK);
     }
 
@@ -58,17 +58,8 @@ public class StatusController {
         return "success";
     }
 
-    @PostMapping("/statusOn")
-    public String statusOn (Authentication authentication) {
-        Integer userNo = jwtProvider.getUserNo(authentication);
-        return statusService.statusOn(userNo);
-    }
 
-    @PostMapping("/statusOff")
-    public String statusOff (Authentication authentication) {
-        Integer userNo = jwtProvider.getUserNo(authentication);
-        return statusService.statusOff(userNo);
-    }
+
 
     @GetMapping ("/status/others")
     public List<Map<String,String>> getOthersStatus (Authentication authentication, @RequestParam(name = "phone", required = false) String phone, HttpServletResponse res) throws IOException {
@@ -80,6 +71,7 @@ public class StatusController {
         }
         else return statusService.getAllOthersStatus(thisUserNo);
     }
+
 
 
 

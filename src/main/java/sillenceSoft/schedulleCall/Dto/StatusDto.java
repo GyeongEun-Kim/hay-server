@@ -12,4 +12,5 @@ public class StatusDto {
     private Integer statusNo;
     private String status;
     private LocalDateTime modDt;
+    private boolean isFromSchedule;
 }

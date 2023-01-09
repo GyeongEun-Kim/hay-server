@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 import sillenceSoft.schedulleCall.Dto.UserDto;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Mapper
@@ -27,5 +28,9 @@ public interface UserRepository {
     Integer findByPhone(String phone);
 
     Integer getStatusNo (Integer userNo);
+
+    Map<String,Object> getStatusOn (Integer userNo);
+
+    Integer getNowStatus (Integer userNo);
 
 }

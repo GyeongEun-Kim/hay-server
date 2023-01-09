@@ -5,7 +5,7 @@
 
 <mapper namespace="sillenceSoft.schedulleCall.Repository.StatusRepository">
     <select id="getAllStatus" parameterType="Integer" resultType="map" >
-        select * from Status where userNo=${userNo};
+        select  * from Status where userNo=${userNo} ;
     </select>
 
 <!--    <select id="getStatus" parameterType="Integer"-->
@@ -15,7 +15,8 @@
 
     <insert id="addStatus" parameterType="sillenceSoft.schedulleCall.Dto.StatusDto"
             useGeneratedKeys="true" keyProperty="statusNo">
-        insert into Status(userNo, status, ModDt) values (${statusDto.userNo}, #{statusDto.status}, #{statusDto.modDt});
+        insert into Status(userNo, status, ModDt, isFromSchedule) values (${statusDto.userNo}, #{statusDto.status}, #{statusDto.modDt},
+        #{statusDto.isFromSchedule});
     </insert>
 
     <delete id="deleteStatus" parameterType="Integer">

@@ -15,7 +15,7 @@ import java.util.Map;
 @Mapper
 public interface StatusRepository  {
 
-    List<Map<String,String>> getAllStatus (@Param("userNo") int userNo);
+    List<Map<String,Object>> getAllStatus (@Param("userNo") int userNo);
     void addStatus (@Param("statusDto")StatusDto statusDto);
     void deleteStatus (@Param("statusNo") int statusNo);
     void updateStatus (@Param("status") String status,@Param("statusNo") int StatusNo, @Param("modDt")LocalDateTime modDt);

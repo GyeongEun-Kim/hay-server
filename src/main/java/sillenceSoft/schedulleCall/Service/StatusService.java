@@ -30,9 +30,18 @@ public class StatusService {
     private final SHA_256 sha256;
 
 
-    public List<Map<String,String>> getAllStatus (Integer userNo) {
+    public List<Map<String,Object>> getAllStatus (Integer userNo) {
 
-        List<Map<String,String>> allStatus = statusRepository.getAllStatus(userNo);
+        List<Map<String,Object>> allStatus = statusRepository.getAllStatus(userNo);
+        Integer nowStatus = userRepository.getNowStatus(userNo);
+
+        for (Map m : allStatus) {
+            //System.out.println(m.get("statusNo").equals(nowStatus.toString()));
+            if (m.get("statusNo").toString().equals(nowStatus.toString())) {
+               // System.out.println("rr");
+                m.put("selected",true);
+            }
+        }
         return allStatus;
     }
 
@@ -43,6 +52,7 @@ public class StatusService {
                     .userNo(userNo)
                     .status(newStatusMemo)
                     .modDt(LocalDateTime.now())
+                    .isFromSchedule(false)
                     .build();
         try {
             statusRepository.addStatus(statusDto);
@@ -81,10 +91,13 @@ public class StatusService {
         return msg;
     }
 
-    public String statusOn (Integer userNo) {
+    public String statusShow (Integer userNo) {
         String msg;
+
         try {
-            userRepository.setStatusOn(userNo);
+            if ((boolean) userRepository.getStatusOn(userNo).get("statusOn")==true)
+                userRepository.setStatusOff(userNo);
+            else userRepository.setStatusOn(userNo);
             msg="success";
         }
         catch (Exception e) {
@@ -94,18 +107,6 @@ public class StatusService {
         return msg;
     }
 
-    public String statusOff (Integer userNo) {
-        String msg;
-        try {
-            userRepository.setStatusOff(userNo);
-            msg="success";
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            msg="fail to set auto status";
-        }
-        return msg;
-    }
 
     public Map<String,String> getOthersStatus (Integer userNo, String phone, HttpServletResponse res) throws IOException {
         //userNo유저가  phone유저의 상태를 보려고 하는상황

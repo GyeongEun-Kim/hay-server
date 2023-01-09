@@ -22,10 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import sillenceSoft.schedulleCall.Dto.UserDto;
 import sillenceSoft.schedulleCall.Dto.UserRequestDto;
 import sillenceSoft.schedulleCall.Repository.RefreshTokenRepository;
-import sillenceSoft.schedulleCall.Service.GoogleUserInfo;
-import sillenceSoft.schedulleCall.Service.JWTProvider;
-import sillenceSoft.schedulleCall.Service.KakaoUserInfo;
-import sillenceSoft.schedulleCall.Service.UserService;
+import sillenceSoft.schedulleCall.Service.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +30,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,6 +43,7 @@ public class UserController {
     private final KakaoUserInfo kakaoUserInfo;
     private final JWTProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final StatusService statusService;
 
 
     @PostMapping(value = "/login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -80,7 +79,17 @@ public class UserController {
     }
 
 
+    @GetMapping("/user/status/show") //statusOn 이 1인지 0인지 확인. 공개상태인지 비공개인지
+    public Map<String,Object> getStatusOnOff (Authentication authentication) {
+        Integer userNo = jwtProvider.getUserNo(authentication);
+        return userService.getStatusOn(userNo);
 
+    }
 
+    @PostMapping("/user/status/show") //statusOn을 1또는 0으로 바꿈
+    public String statusOn (Authentication authentication) {
+        Integer userNo = jwtProvider.getUserNo(authentication);
+        return statusService.statusShow(userNo);
+    }
 
-}
+    }
