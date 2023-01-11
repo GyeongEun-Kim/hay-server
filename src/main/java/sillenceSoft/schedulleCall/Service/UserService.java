@@ -29,8 +29,8 @@ public class UserService {
     private final JwtAuthenticationFilter filter;
 
     public UserDto login(UserRequestDto userRequestDto) throws NoSuchAlgorithmException {
-        String id = sha256.encrypt(getIdBySocial(userRequestDto));
-        //String id = sha256.encrypt("테스트ㅡㅡ"); //로컬테스트용
+        //String id = sha256.encrypt(getIdBySocial(userRequestDto));
+        String id = sha256.encrypt("qqqq"); //로컬테스트용
         UserDto userDto = userRepository.findById(id);
 
         if (userDto == null) { //신규회원인 경우

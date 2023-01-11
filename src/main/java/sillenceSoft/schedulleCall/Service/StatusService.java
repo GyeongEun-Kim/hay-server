@@ -37,9 +37,11 @@ public class StatusService {
 
         for (Map m : allStatus) {
             //System.out.println(m.get("statusNo").equals(nowStatus.toString()));
-            if (m.get("statusNo").toString().equals(nowStatus.toString())) {
-               // System.out.println("rr");
-                m.put("selected",true);
+            if (nowStatus!=null) {
+                if (m.get("statusNo").toString().equals(nowStatus.toString())) {
+                // System.out.println("rr");
+                    m.put("selected", true);
+            }
             }
         }
         return allStatus;
