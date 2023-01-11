@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import sillenceSoft.schedulleCall.Dto.AllStatus;
 import sillenceSoft.schedulleCall.Dto.StatusDto;
 import sillenceSoft.schedulleCall.Repository.AccessRepository;
 import sillenceSoft.schedulleCall.Repository.StatusRepository;
@@ -30,21 +31,23 @@ public class StatusService {
     private final SHA_256 sha256;
 
 
-    public List<Map<String,Object>> getAllStatus (Integer userNo) {
+    public AllStatus getAllStatus (Integer userNo) {
 
         List<Map<String,Object>> allStatus = statusRepository.getAllStatus(userNo);
         Integer nowStatus = userRepository.getNowStatus(userNo);
+        Integer statusState = 0; // 상태글 상태
 
         for (Map m : allStatus) {
-            //System.out.println(m.get("statusNo").equals(nowStatus.toString()));
             if (nowStatus!=null) {
                 if (m.get("statusNo").toString().equals(nowStatus.toString())) {
-                // System.out.println("rr");
                     m.put("selected", true);
-            }
+                    if ((boolean) m.get("isFromSchedule")==true) {
+                        statusState = 1;
+                    }
+                }
             }
         }
-        return allStatus;
+        return new AllStatus(statusState, allStatus);
     }
 
     public ResponseEntity addStatus (Integer userNo, String newStatusMemo) {

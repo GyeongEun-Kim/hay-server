@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import sillenceSoft.schedulleCall.Dto.AllStatus;
 import sillenceSoft.schedulleCall.Dto.StatusDto;
 import sillenceSoft.schedulleCall.Service.JWTProvider;
 import sillenceSoft.schedulleCall.Service.ScheduleService;
@@ -31,10 +32,10 @@ public class StatusController {
     private final JWTProvider jwtProvider;
 
     @GetMapping(value = "/status")
-    public ResponseEntity getAllStatus (Authentication authentication) {
+    public AllStatus getAllStatus (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        List<Map<String, Object>> allStatusMemo = statusService.getAllStatus(userNo);
-        return new ResponseEntity(allStatusMemo, HttpStatus.OK);
+        AllStatus allStatus = statusService.getAllStatus(userNo);
+        return allStatus;
     }
 
     @PostMapping("/status")
