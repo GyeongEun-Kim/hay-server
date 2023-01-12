@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 import sillenceSoft.schedulleCall.Dto.UserDto;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,4 +34,8 @@ public interface UserRepository {
 
     Integer getNowStatus (Integer userNo);
 
+    void updateLoginTime (@Param("id") String id, @Param("regTime")LocalDateTime regTime);
+
+
+    UserDto findByIdAndSocial(@Param("id")String id, @Param("social")String social);
 }

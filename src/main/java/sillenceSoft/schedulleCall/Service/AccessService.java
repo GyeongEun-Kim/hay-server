@@ -17,20 +17,13 @@ public class AccessService {
     private final UserRepository userRepository;
     private final SHA_256 sha256;
 
-    public String canAccess (Integer userNo, String accessUserPhone) {
-        String msg;
+    public void canAccess (Integer userNo, String accessUserPhone) {
 
-        try {
             String encrypt = sha256.encrypt(accessUserPhone);
             Integer accessUserNo = userRepository.findByPhone(encrypt);
             System.out.println("accessUserNo="+ accessUserNo);
             accessRepository.saveAccess(userNo, accessUserNo);
-            msg="success";
-        }catch (Exception e ) {
-            e.printStackTrace();
-            msg="fail to allow access";
-        }
-        return msg;
+
     }
 
     public String cannotAccess (Integer userNo, String accessUserPhone) {

@@ -14,6 +14,10 @@
         #{userDto.statusOn});
     </insert>
 
+    <update id="updateLoginTime">
+        update User set regTime =#{regTime} where id=#{id};
+    </update>
+
     <select id="findById"
             parameterType="String"
             resultType="sillenceSoft.schedulleCall.Dto.UserDto">
@@ -39,7 +43,7 @@
     </update>
 
     <select id="findByPhone" resultType="Integer">
-        select userNo from User where phone=#{phone};
+        select userNo from User where phone=#{phone} order by regTime desc limit 1;
     </select>
 
     <update id="cancelNowStatus">
@@ -56,6 +60,10 @@
 
     <select id="getNowStatus" resultType="Integer">
         select statusNo from User where userNo=${userNo};
+    </select>
+
+    <select id="findByIdAndSocial" resultType="sillenceSoft.schedulleCall.Dto.UserDto">
+        select * from User where id= #{id} and social=#{social};
     </select>
 </mapper>
 

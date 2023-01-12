@@ -22,10 +22,10 @@ public class AccessController {
     private final JWTProvider jwtProvider;
     //디폴트 : 모두 숨김
     @PostMapping(value = "/access") // 숨김 해제
-    public String canAccess (Authentication authentication,
+    public void canAccess (Authentication authentication,
                              @RequestParam(name = "accessUserPhone") String accessUserPhone) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        return accessService.canAccess(userNo, accessUserPhone);
+        accessService.canAccess(userNo, accessUserPhone);
     }
 
     @DeleteMapping(value = "/access") //숨김

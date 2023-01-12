@@ -30,8 +30,8 @@ public class UserService {
 
     public UserDto login(UserRequestDto userRequestDto) throws NoSuchAlgorithmException {
         //String id = sha256.encrypt(getIdBySocial(userRequestDto));
-        String id = sha256.encrypt("qqqq"); //로컬테스트용
-        UserDto userDto = userRepository.findById(id);
+        String id = sha256.encrypt("33444"); //로컬테스트용
+        UserDto userDto = userRepository.findByIdAndSocial(id, userRequestDto.getSocial());
 
         if (userDto == null) { //신규회원인 경우
             userDto = UserDto.builder()
@@ -43,6 +43,11 @@ public class UserService {
                     .statusOn(true)
                     .build();
             userRepository.login(userDto);//회원가입
+        }
+        else { // 기존 회원
+            //로그in시간 upate
+            userRepository.updateLoginTime(id, LocalDateTime.now());
+
         }
 
         return userDto;

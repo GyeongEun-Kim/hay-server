@@ -57,7 +57,6 @@ public class UserController {
         jwtProvider.setHeaderAccessToken(accessToken,response );
         jwtProvider.setHeaderRefreshToken(refreshToken, response);
 
-//        refreshTokenRepository.addRefreshToken(refreshToken);
 
         System.out.println("accessToken = " + accessToken);
 
