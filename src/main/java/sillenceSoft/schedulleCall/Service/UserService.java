@@ -44,12 +44,10 @@ public class UserService {
                     .build();
             userRepository.login(userDto);//회원가입
         }
-        else { // 기존 회원
-            //로그인시간 upate
+        else { // 기존 회원인 경우
+            //로그인시간 update
             userRepository.updateLoginTime(id, LocalDateTime.now());
-
         }
-
         return userDto;
     }
 
@@ -60,7 +58,6 @@ public class UserService {
         } else if (userRequestDto.getSocial().equals("1")) { //카카오로그인
             id = kakaoUserInfo.getUserInfo(userRequestDto.getToken());
         }
-        //System.out.println("id = " + id);
         return id;
     }
 
@@ -68,38 +65,39 @@ public class UserService {
     public String setNowStatus(Integer userNo, Integer statusNo) {
         String msg;
         try {
-            Integer nowStatus = userRepository.getStatusNo(userNo);
+            Integer nowStatus = userRepository.getStatusNo(userNo); //현재 상태글
             if (nowStatus == statusNo)
-                userRepository.cancelNowStatus(userNo); //해제
+                userRepository.cancelNowStatus(userNo); // 현재 상태글 해제
             else
                 userRepository.setNowStatus(userNo, statusNo);
             msg = "success";
         } catch (Exception e) {
             e.printStackTrace();
-            msg = "fail to set status";
+            msg = e.toString();
         }
         return msg;
 
     }
 
-    public void cancelNowStatus(Integer userNo) {
-        userRepository.cancelNowStatus(userNo);
-    }
 
     public void jwtCheck(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String refreshToken = jwtProvider.getRefreshToken(request).orElse("empty");
-        if (refreshToken.equals("empty")) { //엑세스 토큰 자체가 오지않은경우
+        if (refreshToken.equals("empty")) { //리프레시 토큰 자체가 오지않은경우
             response.sendError(401, "리프레시 토큰을 보내주세요.");
         } else if (!refreshToken.equals("empty")) { //리프레시 토큰이 존재
             refreshToken = refreshToken.substring(7);
             if (jwtProvider.validTokenAndReturnBody(refreshToken) != null) {//유효하면
                 Claims claims = jwtProvider.validTokenAndReturnBody(refreshToken);
+
                 String id = (String) claims.get("id");
-                String regTime = (String) claims.get("regTime");
+
+                //DB에 로그인 시간 업데이트
+                LocalDateTime now = LocalDateTime.now();
+                userRepository.updateLoginTime(id,now);
 
                 /// 토큰 발급 (access, refresh 둘다 재발급)
-                String newAccessToken = jwtProvider.createAccessToken(id, regTime);
-                String newRefreshToken = jwtProvider.createRefreshToken(id, regTime);
+                String newAccessToken = jwtProvider.createAccessToken(id, now.toString());
+                String newRefreshToken = jwtProvider.createRefreshToken(id, now.toString());
                 /// 헤더에 엑세스, 리프레시 토큰 추가
                 jwtProvider.setHeaderAccessToken(newAccessToken, response);
                 jwtProvider.setHeaderRefreshToken(newRefreshToken, response);
@@ -114,5 +112,20 @@ public class UserService {
 
     public Map<String,Object> getStatusOn (Integer userNo) {
         return  userRepository.getStatusOn(userNo);
+    }
+
+    public String statusShow (Integer userNo) {
+        String msg;
+        try {
+            if ((boolean) userRepository.getStatusOn(userNo).get("statusOn")==true)
+                userRepository.setStatusOff(userNo);
+            else userRepository.setStatusOn(userNo);
+            msg="success";
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            msg=e.toString();
+        }
+        return msg;
     }
 }

@@ -88,7 +88,7 @@ public class UserController {
     @PostMapping("/user/status/show") //statusOn을 1또는 0으로 바꿈
     public String statusOn (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        return statusService.statusShow(userNo);
+        return userService.statusShow(userNo);
     }
 
     }

@@ -37,30 +37,10 @@ public class SHA_256 {
         //String algorithm = "SHA-256"; // if you perfer SHA-2
         String algorithm = "SHA3-256";
 
-        //String pText = "Hello World";
-//        System.out.println(String.format(OUTPUT_FORMAT, "Input (string)", pText));
-//        System.out.println(String.format(OUTPUT_FORMAT, "Input (length)", pText.length()));
-
         byte[] shaInBytes = digest(text.getBytes(UTF_8), algorithm);
         return bytesToHex(shaInBytes);
         // fixed length, 32 bytes, 256 bits.
 
-
-
     }
-//    public String encrypt(String password) throws NoSuchAlgorithmException {
-//        MessageDigest md = MessageDigest.getInstance("SHA-256");
-//        md.update(password.getBytes());
-//
-//        return bytesToHex(md.digest());
-//    }
-//
-//    private String bytesToHex(byte[] bytes) {
-//        StringBuilder builder = new StringBuilder();
-//        for (byte b : bytes) {
-//            builder.append(String.format("%02x", b));
-//        }
-//        return builder.toString();
-//    }
 
 }

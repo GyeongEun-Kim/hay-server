@@ -96,21 +96,7 @@ public class StatusService {
         return msg;
     }
 
-    public String statusShow (Integer userNo) {
-        String msg;
 
-        try {
-            if ((boolean) userRepository.getStatusOn(userNo).get("statusOn")==true)
-                userRepository.setStatusOff(userNo);
-            else userRepository.setStatusOn(userNo);
-            msg="success";
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            msg="fail to set auto status";
-        }
-        return msg;
-    }
 
 
     public Map<String,String> getOthersStatus (Integer userNo, String phone, HttpServletResponse res) throws IOException {
