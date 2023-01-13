@@ -16,7 +16,7 @@ public interface UserRepository {
 
     UserDto findById(@Param("id")String id);
 
-    int getUserNoById (@Param("id")String id);
+    Integer getUserNoById (@Param("id")String id);
 
     void setNowStatus (@Param("userNo") int userNo, @Param("statusNo") int statusNo);
 

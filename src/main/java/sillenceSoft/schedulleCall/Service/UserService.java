@@ -29,8 +29,8 @@ public class UserService {
     private final JwtAuthenticationFilter filter;
 
     public UserDto login(UserRequestDto userRequestDto) throws NoSuchAlgorithmException {
-        //String id = sha256.encrypt(getIdBySocial(userRequestDto));
-        String id = sha256.encrypt("33444"); //로컬테스트용
+        String id = sha256.encrypt(getIdBySocial(userRequestDto));
+        //String id = sha256.encrypt("ccc"); //로컬테스트용
         UserDto userDto = userRepository.findByIdAndSocial(id, userRequestDto.getSocial());
 
         if (userDto == null) { //신규회원인 경우
@@ -45,7 +45,7 @@ public class UserService {
             userRepository.login(userDto);//회원가입
         }
         else { // 기존 회원
-            //로그in시간 upate
+            //로그인시간 upate
             userRepository.updateLoginTime(id, LocalDateTime.now());
 
         }
