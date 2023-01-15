@@ -8,21 +8,22 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @Builder
-public class ScheduleDto {
+public class ScheduleRequestDto {
     private long scheduleNo;
     private int week;
     private String status;
     private StartTime startTime;
     private EndTime endTime;
     private LocalDateTime modDt;
+    private Integer StatusNo;
 
 
-    public ScheduleDto() {
+    public ScheduleRequestDto() {
         this.modDt= LocalDateTime.now();
     }
 
-    public ScheduleDto(long scheduleNo, int week, String status, int startHour, int startMinute,
-                       int endHour, int endMinute, LocalDateTime modDt) {
+    public ScheduleRequestDto(long scheduleNo, int week, String status, int startHour, int startMinute,
+                              int endHour, int endMinute, LocalDateTime modDt) {
         this.scheduleNo=scheduleNo;
         this.week=week;
         this.status=status;

@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import sillenceSoft.schedulleCall.Dto.AllStatus;
 import sillenceSoft.schedulleCall.Dto.StatusDto;
+import sillenceSoft.schedulleCall.Dto.StatusResponseDto;
 import sillenceSoft.schedulleCall.Service.JWTProvider;
 import sillenceSoft.schedulleCall.Service.ScheduleService;
 import sillenceSoft.schedulleCall.Service.StatusService;
@@ -32,10 +33,9 @@ public class StatusController {
     private final JWTProvider jwtProvider;
 
     @GetMapping(value = "/status")
-    public AllStatus getAllStatus (Authentication authentication) {
+    public ResponseEntity getAllStatus (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        AllStatus allStatus = statusService.getAllStatus(userNo);
-        return allStatus;
+        return statusService.getAllStatus(userNo);
     }
 
     @PostMapping("/status")
@@ -45,32 +45,28 @@ public class StatusController {
     }
 
     @DeleteMapping("/status")
-    public String deleteStatus (Authentication authentication, @RequestParam(name = "statusNo") int statusNo) {
+    public ResponseEntity deleteStatus (Authentication authentication, @RequestParam(name = "statusNo") int statusNo) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        statusService.deleteStatus(statusNo);
-        return "success";
+        return statusService.deleteStatus(statusNo);
+
     }
 
     @PutMapping("/status")
-    public String updateStatus (Authentication authentication, @RequestParam(name = "status") String status,
+    public ResponseEntity updateStatus (Authentication authentication, @RequestParam(name = "status") String status,
                                 @RequestParam(name = "statusNo") int statusNo) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        statusService.updateStatus(status, statusNo);
-        return "success";
+        return statusService.updateStatus(status, statusNo);
+
     }
 
 
-
-
     @GetMapping ("/status/others")
-    public List<Map<String,String>> getOthersStatus (Authentication authentication, @RequestParam(name = "phone", required = false) String phone, HttpServletResponse res) throws IOException {
+    public ResponseEntity getOthersStatus (Authentication authentication, @RequestParam(name = "phone", required = false) String phone, HttpServletResponse res) throws IOException {
         Integer thisUserNo = jwtProvider.getUserNo(authentication);
-        if (phone!=null) {
-            List<Map<String,String>> result = new ArrayList<>();
-            result.add(statusService.getOthersStatus(thisUserNo, phone, res));
-            return result;
-        }
-        else return statusService.getAllOthersStatus(thisUserNo);
+        if (phone!=null)
+            return statusService.getOthersStatus(thisUserNo, phone, res);
+        else
+            return statusService.getAllOthersStatus(thisUserNo);
     }
 
 

@@ -1,24 +1,19 @@
 package sillenceSoft.schedulleCall.Service;
 
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import sillenceSoft.schedulleCall.Dto.AllStatus;
 import sillenceSoft.schedulleCall.Dto.StatusDto;
+import sillenceSoft.schedulleCall.Dto.StatusResponseDto;
 import sillenceSoft.schedulleCall.Repository.AccessRepository;
 import sillenceSoft.schedulleCall.Repository.StatusRepository;
 import sillenceSoft.schedulleCall.Repository.UserRepository;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,23 +26,29 @@ public class StatusService {
     private final SHA_256 sha256;
 
 
-    public AllStatus getAllStatus (Integer userNo) {
+    public ResponseEntity getAllStatus (Integer userNo) {
+        try {
+            AllStatus allStatus = AllStatus.builder()
+                    .allStatus(statusRepository.getAllStatus(userNo))
+                    .StatusState(userRepository.getStatusState(userNo))
+                    .build();
 
-        List<Map<String,Object>> allStatus = statusRepository.getAllStatus(userNo);
-        Integer nowStatus = userRepository.getNowStatus(userNo);
-        Integer statusState = 0; // 상태글 상태
+            Integer nowStatus = userRepository.getNowStatus(userNo);
+            //현재 상태글 존재 여부
 
-        for (Map m : allStatus) {
-            if (nowStatus!=null) {
-                if (m.get("statusNo").toString().equals(nowStatus.toString())) {
-                    m.put("selected", true);
-                    if ((boolean) m.get("isFromSchedule")==true) {
-                        statusState = 1;
+            for (Map m : allStatus.getAllStatus()) {
+                if (nowStatus != null) {
+                    if (m.get("statusNo").equals(nowStatus)) {
+                        m.put("selected", true);
                     }
                 }
             }
+            return new ResponseEntity<AllStatus>(allStatus, HttpStatus.OK);
         }
-        return new AllStatus(statusState, allStatus);
+        catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>(e.toString(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public ResponseEntity addStatus (Integer userNo, String newStatusMemo) {
@@ -60,67 +61,70 @@ public class StatusService {
                     .isFromSchedule(false)
                     .build();
         try {
-            statusRepository.addStatus(statusDto);
-            responseEntity = new ResponseEntity(statusDto, HttpStatus.OK);
+            if (statusRepository.checkIfPresent(userNo,statusDto.getStatus())== null) {
+                statusRepository.addStatus(statusDto);
+                responseEntity = new ResponseEntity(statusDto, HttpStatus.OK);
+            }
+            else {
+                responseEntity = new ResponseEntity("이미 같은 상태글이 존재합니다.", HttpStatus.CONFLICT);
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
-            responseEntity = new ResponseEntity("fail to add status", HttpStatus.INTERNAL_SERVER_ERROR);
+            responseEntity = new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseEntity;
     }
 
 
-    public String deleteStatus ( int statusNo) {
-        String msg;
+    public ResponseEntity deleteStatus ( int statusNo) {
         try {
             statusRepository.deleteStatus( statusNo);
-            msg="success";
+            return new ResponseEntity("success", HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            msg="fail to delete status";
+            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return msg;
     }
 
-    public String  updateStatus (String status, int statusNo) {
-        String msg;
+    public ResponseEntity updateStatus (String status, int statusNo) {
         try {
             statusRepository.updateStatus(status, statusNo, LocalDateTime.now());
-            msg="success";
+            return new ResponseEntity("success", HttpStatus.OK);
         }
         catch (Exception e) {
             e.printStackTrace();
-            msg="fail to update status";
+            return new ResponseEntity(e.toString(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return msg;
     }
 
 
-
-
-    public Map<String,String> getOthersStatus (Integer userNo, String phone, HttpServletResponse res) throws IOException {
+    public ResponseEntity getOthersStatus (Integer userNo, String phone, HttpServletResponse res) throws IOException {
         //userNo유저가  phone유저의 상태를 보려고 하는상황
         Integer check = accessRepository.checkAccessOrNot(sha256.encrypt( phone), userNo);
-        boolean statusOn = (boolean)userRepository.getStatusOn(userRepository.findByPhone(phone)).get("statusOn");
-        System.out.println("check="+check);
-        Map<String,String> result = null;
-        if (check != null && statusOn==true) {
-            result = statusRepository.getNowStatus(check);
+        //check가 null이면 access불가
+        boolean statusOn =userRepository.getStatusOn(userRepository.findByPhone(phone));
+
+        if (check != null && statusOn==true) { //상태표시 가능이고, 유저가 숨김해제 돼있으면 조회가능!
+            StatusResponseDto result = userRepository.getNowStatusAndPhone(check);
             if (result == null)  {
-                res.sendError(404,"사용자의 현재 상태가 존재하지 않습니다");
-                return null;
+                return new ResponseEntity("사용자의 현재 상태가 존재하지 않습니다", HttpStatus.NO_CONTENT);
             }
-            else return result;
+            else return new ResponseEntity(result,HttpStatus.OK);
         } else { //접근 자체가 불가할때
-            res.sendError(404,"해당 사용자의 상태를 볼 수 없습니다");
-            return null;
+            return new ResponseEntity("사용자의 상태글에 접근 권한이 없습니다", HttpStatus.UNAUTHORIZED);
         }
     }
 
-    public List<Map<String,String>> getAllOthersStatus (Integer thisUserNo) {
-        List<Map<String, String>> allOthersStatus = statusRepository.getAllOthersStatus(thisUserNo);
-        return allOthersStatus;
+    public ResponseEntity getAllOthersStatus (Integer thisUserNo) {
+        try {
+            List<StatusResponseDto> allOthersStatus = statusRepository.getAllOthersStatus(thisUserNo);
+            return new ResponseEntity(allOthersStatus,HttpStatus.OK);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(e.toString(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 

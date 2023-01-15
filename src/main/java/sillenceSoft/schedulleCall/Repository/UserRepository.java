@@ -4,6 +4,7 @@ import org.apache.catalina.User;
 import org.apache.ibatis.annotations.*;
 
 import org.springframework.stereotype.Repository;
+import sillenceSoft.schedulleCall.Dto.StatusResponseDto;
 import sillenceSoft.schedulleCall.Dto.UserDto;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,8 @@ public interface UserRepository {
 
     void setNowStatus (@Param("userNo") int userNo, @Param("statusNo") int statusNo);
 
+    StatusResponseDto getNowStatusAndPhone (Integer userNo);
+
     void cancelNowStatus (Integer userNo);
 
     void setStatusOn (@Param("userNo")Integer userNo);
@@ -30,7 +33,9 @@ public interface UserRepository {
 
     Integer getStatusNo (Integer userNo);
 
-    Map<String,Object> getStatusOn (Integer userNo);
+    Map<String,Object> getStatusOnAndPhone (Integer userNo);
+
+    boolean getStatusOn (Integer userNo);
 
     Integer getNowStatus (Integer userNo);
 
@@ -38,4 +43,10 @@ public interface UserRepository {
 
 
     UserDto findByIdAndSocial(@Param("id")String id, @Param("social")String social);
+
+    Boolean getStatusState (Integer userNo);
+
+    void setStatusState (Integer userNo);
+
+    void cancelStatusState (Integer userNo);
 }

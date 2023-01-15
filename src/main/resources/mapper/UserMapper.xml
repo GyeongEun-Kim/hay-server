@@ -54,8 +54,20 @@
         select statusNo from User where userNo=${userNo};
     </select>
 
-    <select id="getStatusOn" resultType="map">
+    <select id="getStatusOnAndPhone" resultType="map">
         select phone, statusOn from User where userNo=${userNo};
+    </select>
+
+    <select id="getNowStatusAndPhone" resultType="sillenceSoft.schedulleCall.Dto.StatusResponseDto">
+        select b.status, a.phone
+        from Status as b
+        join User as a
+        on a.statusNo = b.statusNo
+        where a.userNo=${userNo} ;
+    </select>
+
+    <select id="getStatusOn" resultType="boolean">
+        select statusOn from User where userNo = ${userNo};
     </select>
 
     <select id="getNowStatus" resultType="Integer">
@@ -65,6 +77,18 @@
     <select id="findByIdAndSocial" resultType="sillenceSoft.schedulleCall.Dto.UserDto">
         select * from User where id= #{id} and social=#{social};
     </select>
+
+    <select id="getStatusState" resultType="Boolean">
+        select statusState from User where userNo=${userNo};
+    </select>
+
+    <update id="setStatusState">
+        update User set statusState = 1 where userNo = ${userNo};
+    </update>
+
+    <update id="cancelStatusState">
+        update User set statusState = 0 where userNo = ${userNo};
+    </update>
 </mapper>
 
 

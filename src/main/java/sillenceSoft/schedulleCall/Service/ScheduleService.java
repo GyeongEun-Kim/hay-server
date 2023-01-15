@@ -2,12 +2,16 @@ package sillenceSoft.schedulleCall.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import sillenceSoft.schedulleCall.Dto.ScheduleDto;
+import sillenceSoft.schedulleCall.Dto.ScheduleRequestDto;
+import sillenceSoft.schedulleCall.Dto.ScheduleResponseDto;
 import sillenceSoft.schedulleCall.Dto.StatusDto;
+import sillenceSoft.schedulleCall.Dto.UserRequestDto;
 import sillenceSoft.schedulleCall.Repository.AccessRepository;
 import sillenceSoft.schedulleCall.Repository.ScheduleRepository;
 import sillenceSoft.schedulleCall.Repository.StatusRepository;
+import sillenceSoft.schedulleCall.Repository.UserRepository;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -17,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,92 +30,114 @@ public class ScheduleService {
     private final StatusRepository statusRepository;
     private final SHA_256 sha256;
     private final UserService userService;
+    private final UserRepository userRepository;
 
 
     public Object getMySchedule(Integer userNo) {
         try {
-            List<Map<String, Object>> schedule = scheduleRepository.getSchedule(userNo);
-            List<ScheduleDto> results = new ArrayList<ScheduleDto>();
-            for (Map<String, Object> s : schedule) {
-                results.add(new ScheduleDto((long) s.get("scheduleNo"), (int) s.get("week"), (String) s.get("status"),
-                        (int) s.get("startHour"), (int) s.get("startMinute"), (int) s.get("endHour"), (int) s.get("endMinute"),
-                        ((Timestamp) s.get("modDt")).toLocalDateTime()));
-            }
-            return results;
+            List<ScheduleResponseDto> schedule = scheduleRepository.getSchedule(userNo);
+//            List<ScheduleRequestDto> results = new ArrayList<ScheduleRequestDto>();
+//            for (Map<String, Object> s : schedule) {
+//                results.add(new ScheduleRequestDto((long) s.get("scheduleNo"), (int) s.get("week"), (String) s.get("status"),
+//                        (int) s.get("startHour"), (int) s.get("startMinute"), (int) s.get("endHour"), (int) s.get("endMinute"),
+//                        ((Timestamp) s.get("modDt")).toLocalDateTime()));
+//            }
+            return schedule;
         }
         catch (Exception e) {
             e.printStackTrace();
-            return "fail to get schedule";
+            return e.toString();
         }
-
-
     }
 
-    public String addSchedule(Integer userNo, ScheduleDto schedule) {
-        String msg;
-        if (statusRepository.checkIfPresent(userNo, schedule.getStatus())==0) {
-            statusRepository.addStatus(StatusDto.builder()              //status에 없는 상태면 추가하기
+    public ResponseEntity addSchedule(Integer userNo, ScheduleRequestDto schedule) {
+        try {
+            String msg;
+            StatusDto statusDto = StatusDto.builder()
                     .userNo(userNo)
                     .status(schedule.getStatus())
                     .modDt(LocalDateTime.now())
                     .isFromSchedule(true)
-                    .build());
-        }
-        try {
+                    .build();
+
+            statusRepository.addStatus(statusDto);
+
+            schedule.setStatusNo(statusDto.getStatusNo());
             scheduleRepository.addSchedule(userNo, schedule);
-            msg="success";
+            return new ResponseEntity("success", HttpStatus.OK);
         }
         catch (Exception e) {
             e.printStackTrace();
-            msg="fail to add schedule";
+            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return msg;
     }
 
-    public String deleteSchedule(Integer userNo, Integer scheduleNo) {
-        String msg;
+    public ResponseEntity deleteSchedule(Integer userNo, Integer scheduleNo) {
         try {
             scheduleRepository.deleteSchedule(userNo, scheduleNo);
-            msg="success";
+            return new ResponseEntity("success", HttpStatus.OK);
         }
         catch (Exception e) {
             e.printStackTrace();
-            msg="fail to delete schedule";
+            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return msg;
         }
 
         public Object getOthersSchedule (Integer userNo, String phone, HttpServletResponse res) throws IOException {
             Integer check = accessRepository.checkAccessOrNot(sha256.encrypt( phone), userNo);
-            System.out.println("userNo = "+check);
+            //check = 접근할수 ㅣㅆ는 userNo
 
             if (check != null) {
-                List<Map<String,Object>> mySchedule = (List<Map<String,Object>>)getMySchedule(check);
-                if (mySchedule.size()==0) {
+                List<ScheduleResponseDto> schedule =(List<ScheduleResponseDto>) getMySchedule(check);
+                if (schedule.size()==0) {
                     res.sendError(404,"사용자의 현재 스케줄이 존재하지 않습니다");
                     return null;
                 }
-                else return mySchedule;
+                else return schedule;
             } else { //접근 자체가 불가할때
-                res.sendError(404,"해당 사용자의 스케줄을 볼 수 없습니다");//숨김 당해서 안보이는거지만 그냥 상태가 없다고 출력함.
+                res.sendError(404,"해당 사용자의 스케줄을 볼 수 없습니다");
                 return null;
             }
         }
 
-        public void toScheduleStatus(Integer userNo) {
+        public ResponseEntity toScheduleStatus(Integer userNo) {
             LocalDateTime date = LocalDateTime.now();
             DayOfWeek dayOfWeek = date.getDayOfWeek();//요일 (월요일1, 일요일 7)
             int hour = date.getHour();
             int minute = date.getMinute();
             int week = dayOfWeek.getValue();
             if (week == 7 ) week= 0;
-            Integer statusNo = scheduleRepository.getScheduleStatus(userNo, week, hour, minute );
-            userService.setNowStatus(userNo, statusNo);
+            try {
+                Integer statusNo = scheduleRepository.getScheduleStatusNo(userNo, week, hour, minute );
+                if (statusNo!= null)
+                    userService.setNowStatus(userNo, statusNo);
+                userRepository.setStatusState(userNo);
+                return new ResponseEntity("success",HttpStatus.OK);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
 
         }
 
-        public void cancelScheduleStatus (Integer userNo) {
-            userService.cancelNowStatus(userNo);
+        public ResponseEntity cancelScheduleStatus (Integer userNo) {
+            //user Repo statusState 값 변경.
+            try {
+                userRepository.cancelStatusState(userNo); //스케줄상태 해제
+                //만약 현재상태가 스케줄의 상태글로 지정돼있으면 그것또한 해제
+                Integer nowStatus = userRepository.getNowStatus(userNo);
+                if (nowStatus!=null && statusRepository.checkIsFromSchedule(nowStatus)) {
+                    userRepository.cancelNowStatus(userNo);
+                }
+                return new ResponseEntity("success", HttpStatus.OK);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseEntity(e.toString(),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
         }
 }
 

@@ -49,29 +49,31 @@ public class UserController {
     @PostMapping(value = "/login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity login (@ModelAttribute UserRequestDto userRequestDto,HttpServletResponse response) throws NoSuchAlgorithmException {
+        try {
+            UserDto userDto = userService.login(userRequestDto); //유저 정보
+            String accessToken = jwtProvider.createAccessToken(userDto.getId(), userDto.getRegTime().toString());
+            String refreshToken = jwtProvider.createRefreshToken(userDto.getId(), userDto.getRegTime().toString());
 
-        UserDto userDto = userService.login(userRequestDto); //유저 정보
-        String accessToken = jwtProvider.createAccessToken(userDto.getId(), userDto.getRegTime().toString());
-        String refreshToken = jwtProvider.createRefreshToken(userDto.getId(), userDto.getRegTime().toString());
+            jwtProvider.setHeaderAccessToken(accessToken, response);
+            jwtProvider.setHeaderRefreshToken(refreshToken, response);
 
-        jwtProvider.setHeaderAccessToken(accessToken,response );
-        jwtProvider.setHeaderRefreshToken(refreshToken, response);
-
-
-        System.out.println("accessToken = " + accessToken);
-
-        System.out.println("refreshToken = " + refreshToken);
-
-        return new ResponseEntity(HttpStatus.OK);
+            System.out.println("accessToken = " + accessToken);
+            System.out.println("refreshToken = " + refreshToken);
+            return new ResponseEntity(userDto, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(e.toString(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/jwt-check") //리프레시 토큰의 유효성 확인
-    public void jwtCheck (HttpServletRequest request,HttpServletResponse response) throws IOException {
-        userService.jwtCheck(request,response);
+    public ResponseEntity jwtCheck (HttpServletRequest request,HttpServletResponse response) throws IOException {
+        return userService.jwtCheck(request,response);
     }
 
     @PostMapping("/nowStatus") //현재 상태글 변경
-    public String setNowStatus (Authentication authentication,
+    public ResponseEntity setNowStatus (Authentication authentication,
                               @RequestParam(name = "statusNo") int statusNo) {
         Integer userNo = jwtProvider.getUserNo(authentication);
         return userService.setNowStatus(userNo, statusNo);
@@ -79,14 +81,14 @@ public class UserController {
 
 
     @GetMapping("/user/status/show") //statusOn 이 1인지 0인지 확인. 공개상태인지 비공개인지
-    public Map<String,Object> getStatusOnOff (Authentication authentication) {
+    public ResponseEntity getStatusOnOff (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
         return userService.getStatusOn(userNo);
 
     }
 
     @PostMapping("/user/status/show") //statusOn을 1또는 0으로 바꿈
-    public String statusOn (Authentication authentication) {
+    public ResponseEntity statusOn (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
         return userService.statusShow(userNo);
     }

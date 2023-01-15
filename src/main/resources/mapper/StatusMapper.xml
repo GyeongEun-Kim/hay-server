@@ -14,9 +14,12 @@
 <!--    </select>-->
 
     <insert id="addStatus" parameterType="sillenceSoft.schedulleCall.Dto.StatusDto"
-            useGeneratedKeys="true" keyProperty="statusNo">
+            useGeneratedKeys="true" keyProperty="statusNo" >
         insert into Status(userNo, status, ModDt, isFromSchedule) values (${statusDto.userNo}, #{statusDto.status}, #{statusDto.modDt},
         #{statusDto.isFromSchedule});
+<!--        <selectKey resultType="Integer" keyProperty="statusNo" keyColumn="statusNo" order="AFTER">-->
+<!--            SELECT LAST_INSERT_ID()-->
+<!--        </selectKey>-->
     </insert>
 
     <delete id="deleteStatus" parameterType="Integer">
@@ -27,21 +30,16 @@
         update Status set status = #{status}, modDt = #{modDt} where statusNo = ${statusNo};
     </update>
 
-    <select id="getNowStatus" resultType="map">
-        select b.status
-        from Status as b
-        join User as a
-        on a.statusNo = b.statusNo
-        where a.userNo=${userNo} ;
-    </select>
 
-    <select id="getAllOthersStatus" resultType="map">
+
+    <select id="getAllOthersStatus" resultType="sillenceSoft.schedulleCall.Dto.StatusResponseDto">
         select b.status, a.phone
         from (select statusNo, phone
             from Access as a
             join User as b
             on a.userNo = b.userNo
-            where accessUserNo = ${userNo}) as a
+            where accessUserNo = ${userNo}
+            and b.statusOn = true) as a
         join Status as b
         on a.statusNo = b.statusNo;
     </select>
@@ -51,5 +49,10 @@
         from Status
         where status = #{status} and userNo=${userNo};
     </select>
+
+    <select id="checkIsFromSchedule" resultType="boolean">
+        select isFromSchedule from Status where statusNo = ${statusNo};
+    </select>
+
 
 </mapper>

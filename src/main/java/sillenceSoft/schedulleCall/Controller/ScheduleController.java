@@ -1,24 +1,18 @@
 package sillenceSoft.schedulleCall.Controller;
 
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONException;
-import org.json.JSONML;
-import org.json.JSONObject;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import sillenceSoft.schedulleCall.Dto.ScheduleDto;
+import sillenceSoft.schedulleCall.Dto.ScheduleRequestDto;
 
 import sillenceSoft.schedulleCall.Service.JWTProvider;
 import sillenceSoft.schedulleCall.Service.ScheduleService;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,14 +28,14 @@ public class ScheduleController {
     }
 
     @PostMapping(value = "/schedule", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String addSchedule (Authentication authentication, @RequestBody ScheduleDto schedule) {
+    public ResponseEntity addSchedule (Authentication authentication, @RequestBody ScheduleRequestDto schedule) {
         Integer userNo = jwtProvider.getUserNo(authentication);
         return scheduleService.addSchedule(userNo, schedule);
 
     }
 
     @DeleteMapping(value = "schedule")
-    public String deleteSchedule (Authentication authentication,@RequestParam Integer scheduleNo) {
+    public ResponseEntity deleteSchedule (Authentication authentication,@RequestParam Integer scheduleNo) {
         Integer userNo = jwtProvider.getUserNo(authentication);
         return scheduleService.deleteSchedule(userNo, scheduleNo);
     }
@@ -54,14 +48,14 @@ public class ScheduleController {
     }
 
     @PostMapping("/schedule/status") //스케줄 상태로 표시
-    public void toScheduleStatus (Authentication authentication) {
+    public ResponseEntity toScheduleStatus (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        scheduleService.toScheduleStatus(userNo);
+        return scheduleService.toScheduleStatus(userNo);
     }
 
     @DeleteMapping("/schedule/status") //스케줄 상태로 표시 해제
-    public void cancelScheduleStatus (Authentication authentication) {
+    public ResponseEntity cancelScheduleStatus (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        scheduleService.cancelScheduleStatus(userNo);
+        return scheduleService.cancelScheduleStatus(userNo);
     }
 }
