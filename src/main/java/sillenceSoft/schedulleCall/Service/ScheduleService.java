@@ -33,32 +33,19 @@ public class ScheduleService {
     private final UserRepository userRepository;
 
 
-    public Object getMySchedule(Integer userNo) {
+    public ResponseEntity getMySchedule(Integer userNo) {
         try {
             List<ScheduleResponseDto> schedule = scheduleRepository.getSchedule(userNo);
-//            List<ScheduleRequestDto> results = new ArrayList<ScheduleRequestDto>();
-//            for (Map<String, Object> s : schedule) {
-//                results.add(
-//                        new ScheduleRequestDto((long) s.get("scheduleNo"),
-//                                                (int) s.get("week"),
-//                                                (String) s.get("status"),
-//                                                (int) s.get("startHour"),
-//                                                (int) s.get("startMinute"),
-//                                                (int) s.get("endHour"),
-//                                                (int) s.get("endMinute"),
-//                                                ((Timestamp) s.get("modDt")).toLocalDateTime()));
-//            }
-            return schedule;
+            return new ResponseEntity(schedule,HttpStatus.OK);
         }
         catch (Exception e) {
             e.printStackTrace();
-            return e.toString();
+            return new ResponseEntity(e.toString(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public ResponseEntity addSchedule(Integer userNo, ScheduleRequestDto schedule) {
         try {
-            String msg;
             StatusDto statusDto = StatusDto.builder()
                     .userNo(userNo)
                     .status(schedule.getStatus())
@@ -89,20 +76,18 @@ public class ScheduleService {
         }
         }
 
-        public Object getOthersSchedule (Integer userNo, String phone, HttpServletResponse res) throws IOException {
+        public ResponseEntity getOthersSchedule (Integer userNo, String phone) throws IOException {
             Integer check = accessRepository.checkAccessOrNot(sha256.encrypt( phone), userNo);
             //check = 접근할수 ㅣㅆ는 userNo
 
             if (check != null) {
                 List<ScheduleResponseDto> schedule =(List<ScheduleResponseDto>) getMySchedule(check);
                 if (schedule.size()==0) {
-                    res.sendError(404,"사용자의 현재 스케줄이 존재하지 않습니다");
-                    return null;
+                    return new ResponseEntity("사용자의 현재 스케줄이 존재하지 않습니다",HttpStatus.NO_CONTENT);
                 }
-                else return schedule;
+                else return new ResponseEntity(schedule, HttpStatus.OK);
             } else { //접근 자체가 불가할때
-                res.sendError(404,"해당 사용자의 스케줄을 볼 수 없습니다");
-                return null;
+                return new ResponseEntity("해당 사용자의 스케줄을 볼 수 없습니다",HttpStatus.NO_CONTENT);
             }
         }
 

@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +23,14 @@ public class AccessController {
     private final JWTProvider jwtProvider;
     //디폴트 : 모두 숨김
     @PostMapping(value = "/access") // 숨김 해제
-    public void canAccess (Authentication authentication,
-                             @RequestParam(name = "accessUserPhone") String accessUserPhone) {
+    public ResponseEntity canAccess (Authentication authentication,
+                                     @RequestParam(name = "accessUserPhone") String accessUserPhone) {
         Integer userNo = jwtProvider.getUserNo(authentication);
-        accessService.canAccess(userNo, accessUserPhone);
+        return accessService.canAccess(userNo, accessUserPhone);
     }
 
     @DeleteMapping(value = "/access") //숨김
-    public String cannotAccess (Authentication authentication,
+    public ResponseEntity cannotAccess (Authentication authentication,
                                 @RequestParam(name = "accessUserPhone") String accessUserPhone)
     {
         Integer userNo = jwtProvider.getUserNo(authentication);
@@ -37,7 +38,7 @@ public class AccessController {
     }
 
     @GetMapping(value = "/access")
-    public Object getAccessList(Authentication authentication) {
+    public ResponseEntity getAccessList(Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
         return accessService.getAccessList(userNo);
 

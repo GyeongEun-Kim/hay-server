@@ -4,21 +4,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="sillenceSoft.schedulleCall.Repository.AccessRepository">
-    <select id="getAccessList" parameterType="Integer" resultType="sillenceSoft.schedulleCall.Dto.UserDto">
-        select *
-        from User
-        join Access
-        ON User.userNo = Access.accessUserNo
-        WHERE Access.userNo = ${userNo};
+    <select id="getAccessList" parameterType="Integer" resultType="String">
+        select accessUserPhone as phone
+        from Access
+        where userNo = ${userNo}
+
     </select>
 
 
     <insert id="saveAccess">
-        insert into Access(accessUserNo, userNo) values (${accessUserNo}, ${userNo});
+        insert into Access(accessUserPhone, userNo) values (#{accessUserPhone}, ${userNo});
     </insert>
 
     <delete id="deleteAccess">
-        delete from Access where accessUserNo = ${accessUserNo} and userNo = ${userNo} ;
+        delete from Access where accessUserPhone = #{accessUserPhone} and userNo = ${userNo} ;
     </delete>
 
     <select id="checkAccessOrNot" resultType="Integer">

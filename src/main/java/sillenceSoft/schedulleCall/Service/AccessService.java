@@ -2,8 +2,11 @@ package sillenceSoft.schedulleCall.Service;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import sillenceSoft.schedulleCall.Dto.AccessListResponseDto;
 import sillenceSoft.schedulleCall.Dto.UserDto;
 import sillenceSoft.schedulleCall.Repository.AccessRepository;
 import sillenceSoft.schedulleCall.Repository.UserRepository;
@@ -17,36 +20,39 @@ public class AccessService {
     private final UserRepository userRepository;
     private final SHA_256 sha256;
 
-    public void canAccess (Integer userNo, String accessUserPhone) {
-
-            String encrypt = sha256.encrypt(accessUserPhone);
-            Integer accessUserNo = userRepository.findByPhone(encrypt);
-            System.out.println("accessUserNo="+ accessUserNo);
-            accessRepository.saveAccess(userNo, accessUserNo);
+    public ResponseEntity canAccess (Integer userNo, String accessUserPhone) {
+            try {
+                String encrypt = sha256.encrypt(accessUserPhone);
+                //중복체크 해야함
+                accessRepository.saveAccess(userNo, encrypt);
+                return new ResponseEntity("success",HttpStatus.OK);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseEntity(e.toString(),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
 
     }
 
-    public String cannotAccess (Integer userNo, String accessUserPhone) {
-        String msg;
+    public ResponseEntity cannotAccess (Integer userNo, String accessUserPhone) {
         try {
             String encrypt = sha256.encrypt(accessUserPhone);
-            Integer accessUserNo =userRepository.findByPhone(encrypt);
-            System.out.println("accessUserNo="+ accessUserNo);
-            accessRepository.deleteAccess(userNo, accessUserNo);
-            msg="success";
+            accessRepository.deleteAccess(userNo, encrypt);
+            return new ResponseEntity("success", HttpStatus.OK);
         }
         catch (Exception e) {
             e.printStackTrace();
-            msg="fail to disallow access";
+            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return msg;
     }
 
-    public Object getAccessList(Integer userNo) {
+    public ResponseEntity getAccessList(Integer userNo) {
         try {
-            return accessRepository.getAccessList(userNo);
+            List<String> accessList = accessRepository.getAccessList(userNo);
+            return new ResponseEntity(accessList,HttpStatus.OK);
         }catch (Exception e) {
-            return "fail to get access list";
+            e.printStackTrace();
+            return new ResponseEntity(e.toString(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

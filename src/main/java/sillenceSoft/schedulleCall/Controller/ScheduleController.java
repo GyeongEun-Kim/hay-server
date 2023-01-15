@@ -22,7 +22,7 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @GetMapping(value = "/schedule")
-    public Object getMySchedule (Authentication authentication) {
+    public ResponseEntity getMySchedule (Authentication authentication) {
         Integer userNo = jwtProvider.getUserNo(authentication);
         return scheduleService.getMySchedule(userNo);
     }
@@ -41,10 +41,9 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedule/others")
-    public Object getOthersSchedule (Authentication authentication, @RequestParam(name = "phone") String phone
-                                                       ,HttpServletResponse res) throws IOException {
+    public ResponseEntity getOthersSchedule (Authentication authentication, @RequestParam(name = "phone") String phone) throws IOException {
         Integer thisUserNo = jwtProvider.getUserNo(authentication);
-        return scheduleService.getOthersSchedule(thisUserNo, phone, res);
+        return scheduleService.getOthersSchedule(thisUserNo, phone);
     }
 
     @PostMapping("/schedule/status") //스케줄 상태로 표시
