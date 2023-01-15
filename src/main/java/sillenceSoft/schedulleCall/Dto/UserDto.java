@@ -21,6 +21,6 @@ public class UserDto {
     private LocalDateTime regTime; //최근 로그인 시간
     private Integer statusNo;
     private boolean statusOn; //상태글 숨김 상태 여부. 0이면 숨김 1이면 공개
-    private boolean statusState; //0이면 상태글상태, 1이면 스케줄상태
+    private String statusState; //0이면 상태글상태, 1이면 스케줄상태
 
 }

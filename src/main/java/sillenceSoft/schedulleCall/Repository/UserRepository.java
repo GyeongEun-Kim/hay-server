@@ -44,7 +44,7 @@ public interface UserRepository {
 
     UserDto findByIdAndSocial(@Param("id")String id, @Param("social")String social);
 
-    Boolean getStatusState (Integer userNo);
+    String getStatusState (Integer userNo);
 
     void setStatusState (Integer userNo);
 

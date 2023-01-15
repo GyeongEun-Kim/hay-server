@@ -44,7 +44,7 @@ public class UserService {
                     .statusNo(null)
                     .regTime(LocalDateTime.now())
                     .statusOn(true) //default: 공개상태
-                    .statusState(false) //default :상태글상태
+                    .statusState("0") //default :상태글상태
                     .build();
             userRepository.login(userDto);//회원가입
         }

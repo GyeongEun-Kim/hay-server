@@ -3,7 +3,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+
 <mapper namespace="sillenceSoft.schedulleCall.Repository.ScheduleRepository">
+    <resultMap id="ScheduleResponseDto" type="sillenceSoft.schedulleCall.Dto.ScheduleResponseDto" >
+        <result property="scheduleNo" column="scheduleNo"/>
+        <result property="status" column="status"/>
+        <result property="week" column="week"/>
+        <result property="modDt" column="modDt"/>
+        <association property="startTime" javaType="sillenceSoft.schedulleCall.Dto.StartTime">
+            <result property="hour" column="startHour" />
+            <result property="minute" column="startMinute" />
+        </association>
+        <association property="endTime" javaType="sillenceSoft.schedulleCall.Dto.EndTime">
+            <result property="hour" column="endHour" />
+            <result property="minute" column="endMinute" />
+        </association>
+    </resultMap>
+
+
     <insert id="addSchedule" useGeneratedKeys="true" keyProperty="schedule.scheduleNo">
         insert into Schedule(userNo, modDt, week,  startHour, startMinute, endHour, endMinute, statusNo)
         values (${userNo}, #{schedule.modDt}, ${schedule.week},  ${schedule.startTime.hour},
@@ -14,8 +31,12 @@
         delete from Schedule where scheduleNo =  ${scheduleNo}
     </delete>
 
-    <select id="getSchedule" resultType="map">
-        select * from Schedule where userNo = ${userNo};
+    <select id="getSchedule" resultMap="ScheduleResponseDto">
+        select a.scheduleNo, b.status, a.week, a.modDt, a.startHour, a.startMinute, a.endHour, a.endMinute
+        from Schedule as a
+        join Status as b
+        on a.statusNo = b.statusNo
+        where a.userNo = ${userNo};
     </select>
 
     <select id="getScheduleStatusNo" resultType="Integer">
@@ -23,7 +44,8 @@
             select statusNo
             from Schedule as a
             where a.week=${week} and a.userNo=${userNo} and
-            ${hour} < a.endHour or (${hour} = a.endHour and ${minute} <= a.endMinute);
+            ((${hour} >a.startHour) or (${hour} = a.startHour and ${minute}> a.startMinute)) and
+            ((${hour} < a.endHour) or (${hour} = a.endHour and ${minute} <a.endMinute));
         ]]>
     </select>
 </mapper>

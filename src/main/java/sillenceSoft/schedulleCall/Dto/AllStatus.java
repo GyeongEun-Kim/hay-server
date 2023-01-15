@@ -11,6 +11,6 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 public class AllStatus {
-    private Boolean StatusState;
+    private String StatusState;
     private List<Map<String,Object>> allStatus;
 }

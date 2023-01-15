@@ -9,9 +9,9 @@
     <insert id="login"
             parameterType="sillenceSoft.schedulleCall.Dto.UserDto"
             useGeneratedKeys="true" keyProperty = "userNo">
-        insert into User (id, phone, social, regTime, statusNo, statusOn) values
+        insert into User (id, phone, social, regTime, statusNo, statusOn, statusState) values
         (#{userDto.id}, #{userDto.phone}, #{userDto.social}, #{userDto.regTime}, #{userDto.statusNo},
-        #{userDto.statusOn});
+        #{userDto.statusOn}, #{userDto.statusState});
     </insert>
 
     <update id="updateLoginTime">
@@ -78,16 +78,16 @@
         select * from User where id= #{id} and social=#{social};
     </select>
 
-    <select id="getStatusState" resultType="Boolean">
+    <select id="getStatusState" resultType="String">
         select statusState from User where userNo=${userNo};
     </select>
 
     <update id="setStatusState">
-        update User set statusState = 1 where userNo = ${userNo};
+        update User set statusState = '1' where userNo = ${userNo};
     </update>
 
     <update id="cancelStatusState">
-        update User set statusState = 0 where userNo = ${userNo};
+        update User set statusState = '0' where userNo = ${userNo};
     </update>
 </mapper>
 
