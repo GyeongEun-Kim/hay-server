@@ -35,14 +35,20 @@ public class ScheduleService {
 
     public Object getMySchedule(Integer userNo) {
         try {
-            List<ScheduleResponseDto> schedule = scheduleRepository.getSchedule(userNo);
-//            List<ScheduleRequestDto> results = new ArrayList<ScheduleRequestDto>();
-//            for (Map<String, Object> s : schedule) {
-//                results.add(new ScheduleRequestDto((long) s.get("scheduleNo"), (int) s.get("week"), (String) s.get("status"),
-//                        (int) s.get("startHour"), (int) s.get("startMinute"), (int) s.get("endHour"), (int) s.get("endMinute"),
-//                        ((Timestamp) s.get("modDt")).toLocalDateTime()));
-//            }
-            return schedule;
+            List<Map<String, Object>> schedule = scheduleRepository.getSchedule(userNo);
+            List<ScheduleRequestDto> results = new ArrayList<ScheduleRequestDto>();
+            for (Map<String, Object> s : schedule) {
+                results.add(
+                        new ScheduleRequestDto((long) s.get("scheduleNo"),
+                                                (int) s.get("week"),
+                                                (String) s.get("status"),
+                                                (int) s.get("startHour"),
+                                                (int) s.get("startMinute"),
+                                                (int) s.get("endHour"),
+                                                (int) s.get("endMinute"),
+                                                ((Timestamp) s.get("modDt")).toLocalDateTime()));
+            }
+            return results;
         }
         catch (Exception e) {
             e.printStackTrace();

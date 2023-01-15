@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Mapper
 public interface ScheduleRepository {
-    List<ScheduleResponseDto> getSchedule (Integer UserNo);
+    List<Map<String,Object>> getSchedule (Integer UserNo);
     void deleteSchedule (@Param(value = "userNo") Integer userNo,@Param(value = "scheduleNo") Integer scheduleNo);
     void addSchedule (@Param(value = "userNo") Integer userNo, @Param(value = "schedule") ScheduleRequestDto schedule);
     Integer getScheduleStatusNo(@Param(value = "userNo")Integer userNo, @Param(value = "week") Integer week,

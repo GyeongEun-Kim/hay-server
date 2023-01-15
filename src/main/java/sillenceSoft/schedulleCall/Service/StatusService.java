@@ -61,7 +61,7 @@ public class StatusService {
                     .isFromSchedule(false)
                     .build();
         try {
-            if (statusRepository.checkIfPresent(userNo,statusDto.getStatus())== null) {
+            if (statusRepository.checkIfPresent(userNo,statusDto.getStatus())== 0) {
                 statusRepository.addStatus(statusDto);
                 responseEntity = new ResponseEntity(statusDto, HttpStatus.OK);
             }

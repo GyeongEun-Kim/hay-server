@@ -14,7 +14,7 @@
         delete from Schedule where scheduleNo =  ${scheduleNo}
     </delete>
 
-    <select id="getSchedule" resultType="sillenceSoft.schedulleCall.Dto.ScheduleResponseDto">
+    <select id="getSchedule" resultType="map">
         select * from Schedule where userNo = ${userNo};
     </select>
 
