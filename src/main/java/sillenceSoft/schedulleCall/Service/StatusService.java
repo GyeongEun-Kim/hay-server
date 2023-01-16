@@ -99,26 +99,35 @@ public class StatusService {
     }
 
 
-    public ResponseEntity getOthersStatus (Integer userNo, String phone, HttpServletResponse res) throws IOException {
-        //userNo유저가  phone유저의 상태를 보려고 하는상황
-        Integer check = accessRepository.checkAccessOrNot(sha256.encrypt( phone), userNo);
-        //check가 null이면 access불가
-        boolean statusOn =userRepository.getStatusOn(userRepository.findByPhone(phone));
+    public ResponseEntity getOthersStatus (Integer userNo, String accessUserPhone) throws IOException {
+//        //userNo유저가  accessUserPhone유저의 상태를 보려고 하는상황
 
-        if (check != null && statusOn==true) { //상태표시 가능이고, 유저가 숨김해제 돼있으면 조회가능!
-            StatusResponseDto result = userRepository.getNowStatusAndPhone(check);
-            if (result == null)  {
-                return new ResponseEntity("사용자의 현재 상태가 존재하지 않습니다", HttpStatus.NO_CONTENT);
-            }
-            else return new ResponseEntity(result,HttpStatus.OK);
-        } else { //접근 자체가 불가할때
-            return new ResponseEntity("사용자의 상태글에 접근 권한이 없습니다", HttpStatus.UNAUTHORIZED);
+        //1. accessUser가 statusOn돼있어야함
+        //2. accessUser가 userNo를 숨김해제해야함
+        String encryptedUserPhone = sha256.encrypt(userRepository.getPhoneByUserNo(userNo));
+        String encryptedAccessUserPhone = sha256.encrypt(accessUserPhone);
+
+        Integer accessUserNo = userRepository.getUserNoByPhone(encryptedAccessUserPhone);
+        boolean statusOn = userRepository.getStatusOn(accessUserNo);
+
+        Integer check = accessRepository.checkAccessOrNot(userNo,encryptedAccessUserPhone );
+        System.out.println("check = " + check);
+
+        if (statusOn==true && check!=null) {
+            StatusResponseDto nowStatusAndPhone = userRepository.getNowStatusAndPhone(accessUserNo);
+            if (nowStatusAndPhone==null) return new ResponseEntity("사용자의 현재 상태글이 없습니다", HttpStatus.OK);
+            else return new ResponseEntity(nowStatusAndPhone,HttpStatus.OK);
         }
+        else {
+            return new ResponseEntity("사용자의 상태글에 접근할 수 없습니다.",HttpStatus.OK);
+        }
+
     }
 
     public ResponseEntity getAllOthersStatus (Integer thisUserNo) {
         try {
-            List<StatusResponseDto> allOthersStatus = statusRepository.getAllOthersStatus(thisUserNo);
+            String phone = userRepository.getPhoneByUserNo(thisUserNo);
+            List<StatusResponseDto> allOthersStatus = statusRepository.getAllOthersStatus(phone);
             return new ResponseEntity(allOthersStatus,HttpStatus.OK);
         }
         catch (Exception e) {

@@ -38,7 +38,7 @@
             from Access as a
             join User as b
             on a.userNo = b.userNo
-            where accessUserNo = ${userNo}
+            where a.accessUserPhone = #{phone}
             and b.statusOn = true) as a
         join Status as b
         on a.statusNo = b.statusNo;

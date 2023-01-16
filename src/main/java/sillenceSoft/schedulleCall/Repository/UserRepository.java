@@ -49,4 +49,8 @@ public interface UserRepository {
     void setStatusState (Integer userNo);
 
     void cancelStatusState (Integer userNo);
+
+    String getPhoneByUserNo (Integer userNo);
+
+    Integer getUserNoByPhone (String phone);
 }

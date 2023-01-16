@@ -21,10 +21,11 @@
     </delete>
 
     <select id="checkAccessOrNot" resultType="Integer">
-        select a.userNo
-        from (select userNo from User where phone=#{phone}) as a
-        join Access as b
-        on a.userNo = b.userNo
-        WHERE b.accessUserNo = ${userNo};
+        select b.userNo
+        from Access as a
+        join User as b
+        on a.accessUserPhone = b.phone
+        where a.userNo = ${userNo} and a.accessUserPhone = #{accessUserPhone}
+        order by regTime limit 1;
     </select>
 </mapper>

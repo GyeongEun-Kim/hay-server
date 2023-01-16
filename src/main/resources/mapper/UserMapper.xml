@@ -89,6 +89,14 @@
     <update id="cancelStatusState">
         update User set statusState = '0' where userNo = ${userNo};
     </update>
+
+    <select id="getPhoneByUserNo" resultType="String">
+        select phone from User where userNo = ${userNo} order by regTime desc limit 1;
+    </select>
+
+    <select id="getUserNoByPhone" resultType="Integer">
+        select userNo from User where phone=#{phone} order by regTime desc limit 1;
+    </select>
 </mapper>
 
 

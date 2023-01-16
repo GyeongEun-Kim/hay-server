@@ -48,6 +48,7 @@ public class AccessService {
 
     public ResponseEntity getAccessList(Integer userNo) {
         try {
+
             List<String> accessList = accessRepository.getAccessList(userNo);
             return new ResponseEntity(accessList,HttpStatus.OK);
         }catch (Exception e) {

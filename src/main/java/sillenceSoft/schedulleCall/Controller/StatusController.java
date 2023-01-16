@@ -61,11 +61,11 @@ public class StatusController {
 
 
     @GetMapping ("/status/others")
-    public ResponseEntity getOthersStatus (Authentication authentication, @RequestParam(name = "phone", required = false) String phone, HttpServletResponse res) throws IOException {
+    public ResponseEntity getOthersStatus (Authentication authentication, @RequestParam(name = "phone", required = false) String phone) throws IOException {
         Integer thisUserNo = jwtProvider.getUserNo(authentication);
-        if (phone!=null)
-            return statusService.getOthersStatus(thisUserNo, phone, res);
-        else
+        if (phone!=null) //한명의 상태글 조회
+            return statusService.getOthersStatus(thisUserNo, phone);
+        else //내가 볼수 있는 모든 사람의 상태글 조회
             return statusService.getAllOthersStatus(thisUserNo);
     }
 

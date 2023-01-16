@@ -36,7 +36,8 @@ public class ScheduleService {
     public ResponseEntity getMySchedule(Integer userNo) {
         try {
             List<ScheduleResponseDto> schedule = scheduleRepository.getSchedule(userNo);
-            return new ResponseEntity(schedule,HttpStatus.OK);
+            if (schedule.size()==0) return new ResponseEntity("저장된 스케줄이 없습니다", HttpStatus.OK);
+            else return new ResponseEntity(schedule,HttpStatus.OK);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -76,16 +77,13 @@ public class ScheduleService {
         }
         }
 
-        public ResponseEntity getOthersSchedule (Integer userNo, String phone) throws IOException {
-            Integer check = accessRepository.checkAccessOrNot(sha256.encrypt( phone), userNo);
-            //check = 접근할수 ㅣㅆ는 userNo
+        public ResponseEntity getOthersSchedule (Integer userNo, String accessUserPhone) throws IOException {
 
-            if (check != null) {
-                List<ScheduleResponseDto> schedule =(List<ScheduleResponseDto>) getMySchedule(check);
-                if (schedule.size()==0) {
-                    return new ResponseEntity("사용자의 현재 스케줄이 존재하지 않습니다",HttpStatus.NO_CONTENT);
-                }
-                else return new ResponseEntity(schedule, HttpStatus.OK);
+            Integer check = accessRepository.checkAccessOrNot(userNo, sha256.encrypt(accessUserPhone));
+
+            if (check !=null) {
+                ResponseEntity schedule = getMySchedule(check);
+                return schedule;
             } else { //접근 자체가 불가할때
                 return new ResponseEntity("해당 사용자의 스케줄을 볼 수 없습니다",HttpStatus.NO_CONTENT);
             }

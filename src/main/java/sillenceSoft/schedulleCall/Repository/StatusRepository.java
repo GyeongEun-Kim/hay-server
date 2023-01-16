@@ -21,7 +21,7 @@ public interface StatusRepository  {
     void deleteStatus (@Param("statusNo") int statusNo);
     void updateStatus (@Param("status") String status,@Param("statusNo") int StatusNo, @Param("modDt")LocalDateTime modDt);
 
-    List<StatusResponseDto> getAllOthersStatus(Integer userNo);
+    List<StatusResponseDto> getAllOthersStatus(String phone);
     Integer checkIfPresent (@Param(value = "userNo") Integer userNo, @Param(value = "status") String status);
     boolean checkIsFromSchedule (Integer statusNo);
 }
