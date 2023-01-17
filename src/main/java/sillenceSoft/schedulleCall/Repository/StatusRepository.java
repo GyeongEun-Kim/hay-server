@@ -23,5 +23,5 @@ public interface StatusRepository  {
 
     List<StatusResponseDto> getAllOthersStatus(String phone);
     Integer checkIfPresent (@Param(value = "userNo") Integer userNo, @Param(value = "status") String status);
-    boolean checkIsFromSchedule (Integer statusNo);
+    boolean checkIsFromSchedule (Long statusNo);
 }

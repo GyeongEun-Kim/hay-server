@@ -26,6 +26,7 @@
         delete from Status where statusNo = ${statusNo};
     </delete>
 
+
     <update id="updateStatus" >
         update Status set status = #{status}, modDt = #{modDt} where statusNo = ${statusNo};
     </update>

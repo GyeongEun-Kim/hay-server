@@ -37,7 +37,7 @@ public interface UserRepository {
 
     boolean getStatusOn (Integer userNo);
 
-    Integer getNowStatus (Integer userNo);
+    Long getNowStatus (Integer userNo);
 
     void updateLoginTime (@Param("id") String id, @Param("regTime")LocalDateTime regTime);
 

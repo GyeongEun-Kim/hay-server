@@ -15,4 +15,5 @@ public interface ScheduleRepository {
     void addSchedule (@Param(value = "userNo") Integer userNo, @Param(value = "schedule") ScheduleRequestDto schedule);
     Integer getScheduleStatusNo(@Param(value = "userNo")Integer userNo, @Param(value = "week") Integer week,
             @Param(value = "hour")Integer hour, @Param(value = "minute")Integer minute);
+    Integer getStatusNo(Integer scheduleNo);
 }

@@ -48,4 +48,8 @@
             ((${hour} < a.endHour) or (${hour} = a.endHour and ${minute} <a.endMinute));
         ]]>
     </select>
+
+    <select id="getStatusNo" resultType="Integer">
+        select statusNo from Schedule where scheduleNo = ${scheduleNo};
+    </select>
 </mapper>

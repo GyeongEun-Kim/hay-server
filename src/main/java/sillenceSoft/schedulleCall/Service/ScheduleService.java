@@ -36,8 +36,7 @@ public class ScheduleService {
     public ResponseEntity getMySchedule(Integer userNo) {
         try {
             List<ScheduleResponseDto> schedule = scheduleRepository.getSchedule(userNo);
-            if (schedule.size()==0) return new ResponseEntity("저장된 스케줄이 없습니다", HttpStatus.OK);
-            else return new ResponseEntity(schedule,HttpStatus.OK);
+            return new ResponseEntity(schedule,HttpStatus.OK);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -58,7 +57,7 @@ public class ScheduleService {
 
             schedule.setStatusNo(statusDto.getStatusNo());
             scheduleRepository.addSchedule(userNo, schedule);
-            return new ResponseEntity("success", HttpStatus.OK);
+            return new ResponseEntity(schedule, HttpStatus.OK);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -68,7 +67,10 @@ public class ScheduleService {
 
     public ResponseEntity deleteSchedule(Integer userNo, Integer scheduleNo) {
         try {
+            Integer statusNo = scheduleRepository.getStatusNo(scheduleNo);
             scheduleRepository.deleteSchedule(userNo, scheduleNo);
+            statusRepository.deleteStatus(statusNo);
+            //로직 수정하고픔
             return new ResponseEntity("success", HttpStatus.OK);
         }
         catch (Exception e) {
@@ -116,7 +118,7 @@ public class ScheduleService {
             try {
                 userRepository.cancelStatusState(userNo); //스케줄상태 해제
                 //만약 현재상태가 스케줄의 상태글로 지정돼있으면 그것또한 해제
-                Integer nowStatus = userRepository.getNowStatus(userNo);
+                Long nowStatus = userRepository.getNowStatus(userNo);
                 if (nowStatus!=null && statusRepository.checkIsFromSchedule(nowStatus)) {
                     userRepository.cancelNowStatus(userNo);
                 }

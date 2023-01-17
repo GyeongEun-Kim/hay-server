@@ -70,7 +70,7 @@
         select statusOn from User where userNo = ${userNo};
     </select>
 
-    <select id="getNowStatus" resultType="Integer">
+    <select id="getNowStatus" resultType="Long">
         select statusNo from User where userNo=${userNo};
     </select>
 

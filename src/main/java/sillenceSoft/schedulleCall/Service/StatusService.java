@@ -33,12 +33,12 @@ public class StatusService {
                     .StatusState(userRepository.getStatusState(userNo))
                     .build();
 
-            Integer nowStatus = userRepository.getNowStatus(userNo);
+            Long nowStatus = userRepository.getNowStatus(userNo);
             //현재 상태글 존재 여부
 
             for (Map m : allStatus.getAllStatus()) {
                 if (nowStatus != null) {
-                    if (m.get("statusNo").equals(nowStatus)) {
+                    if (m.get("statusNo")==nowStatus) {
                         m.put("selected", true);
                     }
                 }
