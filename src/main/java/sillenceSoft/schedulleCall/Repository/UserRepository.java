@@ -39,7 +39,7 @@ public interface UserRepository {
 
     Long getNowStatus (Long userNo);
 
-    void updateLoginTime (@Param("id") String id, @Param("regTime")LocalDateTime regTime);
+    void updateLoginTime (@Param("id") String id,@Param("social")String social, @Param("regTime")LocalDateTime regTime);
 
 
     UserDto findByIdAndSocial(@Param("id")String id, @Param("social")String social);

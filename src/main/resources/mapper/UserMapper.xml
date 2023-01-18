@@ -15,7 +15,7 @@
     </insert>
 
     <update id="updateLoginTime">
-        update User set regTime =#{regTime} where id=#{id};
+        update User set regTime =#{regTime} where id=#{id} and social=${social};
     </update>
 
     <select id="findById"
@@ -27,7 +27,7 @@
     <select id="getUserNoById"
             parameterType="String"
             resultType="Long">
-        select userNo from User where id=#{id};
+        select userNo from User where id=#{id} order by regTime desc limit 1;
     </select>
 
     <update id="setNowStatus">

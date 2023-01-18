@@ -49,7 +49,7 @@ public class UserService {
             userRepository.login(userDto);//회원가입
         }
         else { // 기존 회원인 경우 로그인시간 update
-            userRepository.updateLoginTime(id, LocalDateTime.now());
+            userRepository.updateLoginTime(id, userRequestDto.getSocial(), LocalDateTime.now());
         }
         return userDto;
     }
@@ -99,7 +99,7 @@ public class UserService {
 
                     //DB에 로그인 시간 업데이트
                     LocalDateTime now = LocalDateTime.now();
-                    userRepository.updateLoginTime(id,now);
+                  //  userRepository.updateLoginTime(id,now);
 
                     /// 토큰 발급 (access, refresh 둘다 재발급)
                     String newAccessToken = jwtProvider.createAccessToken(id, now.toString());
