@@ -39,7 +39,7 @@
         where a.userNo = ${userNo};
     </select>
 
-    <select id="getScheduleStatusNo" resultType="Integer">
+    <select id="getScheduleStatusNo" resultType="Long">
         <![CDATA[
             select statusNo
             from Schedule as a
@@ -49,7 +49,13 @@
         ]]>
     </select>
 
-    <select id="getStatusNo" resultType="Integer">
+    <select id="getStatusNo" resultType="Long">
         select statusNo from Schedule where scheduleNo = ${scheduleNo};
     </select>
+
+    <update id="updateSchedule">
+        update Schedule set week = ${schedule.week}, startHour = ${schedule.startTime.hour}, startMinute = ${schedule.startTime.minute},
+        endHour = ${schedule.endTime.hour}, endMinute = ${schedule.endTime.minute}, modDt =#{schedule.modDt}
+        where scheduleNo = ${schedule.scheduleNo};
+    </update>
 </mapper>

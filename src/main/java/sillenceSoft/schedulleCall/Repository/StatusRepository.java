@@ -16,12 +16,12 @@ import java.util.Map;
 @Mapper
 public interface StatusRepository  {
 
-    List<Map<String,Object>> getAllStatus (@Param("userNo") int userNo);
-    Integer addStatus (@Param("statusDto")StatusDto statusDto);
-    void deleteStatus (@Param("statusNo") int statusNo);
-    void updateStatus (@Param("status") String status,@Param("statusNo") int StatusNo, @Param("modDt")LocalDateTime modDt);
+    List<Map<String,Object>> getAllStatus (@Param("userNo") Long userNo);
+    Long addStatus (@Param("statusDto")StatusDto statusDto);
+    void deleteStatus (@Param("statusNo") Long statusNo);
+    void updateStatus (@Param("status") String status,@Param("statusNo") Long StatusNo, @Param("modDt")LocalDateTime modDt);
 
     List<StatusResponseDto> getAllOthersStatus(String phone);
-    Integer checkIfPresent (@Param(value = "userNo") Integer userNo, @Param(value = "status") String status);
+    Long checkIfPresent (@Param(value = "userNo") Long userNo, @Param(value = "status") String status);
     boolean checkIsFromSchedule (Long statusNo);
 }

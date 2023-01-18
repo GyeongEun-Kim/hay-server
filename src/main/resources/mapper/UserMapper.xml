@@ -26,7 +26,7 @@
 
     <select id="getUserNoById"
             parameterType="String"
-            resultType="Integer">
+            resultType="Long">
         select userNo from User where id=#{id};
     </select>
 
@@ -42,7 +42,7 @@
         update User set statusOn = false where userNo = ${userNo};
     </update>
 
-    <select id="findByPhone" resultType="Integer">
+    <select id="findByPhone" resultType="Long">
         select userNo from User where phone=#{phone} order by regTime desc limit 1;
     </select>
 
@@ -50,7 +50,7 @@
         update User set statusNo = null where userNo=${userNo}
     </update>
 
-    <select id="getStatusNo" resultType="Integer">
+    <select id="getStatusNo" resultType="Long">
         select statusNo from User where userNo=${userNo};
     </select>
 
@@ -94,7 +94,7 @@
         select phone from User where userNo = ${userNo} order by regTime desc limit 1;
     </select>
 
-    <select id="getUserNoByPhone" resultType="Integer">
+    <select id="getUserNoByPhone" resultType="Long">
         select userNo from User where phone=#{phone} order by regTime desc limit 1;
     </select>
 </mapper>

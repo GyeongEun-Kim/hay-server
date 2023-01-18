@@ -10,10 +10,11 @@ import java.util.Map;
 
 @Mapper
 public interface ScheduleRepository {
-    List<ScheduleResponseDto> getSchedule (Integer UserNo);
-    void deleteSchedule (@Param(value = "userNo") Integer userNo,@Param(value = "scheduleNo") Integer scheduleNo);
-    void addSchedule (@Param(value = "userNo") Integer userNo, @Param(value = "schedule") ScheduleRequestDto schedule);
-    Integer getScheduleStatusNo(@Param(value = "userNo")Integer userNo, @Param(value = "week") Integer week,
+    List<ScheduleResponseDto> getSchedule (Long UserNo);
+    void deleteSchedule (@Param(value = "userNo") Long userNo,@Param(value = "scheduleNo") Long scheduleNo);
+    void addSchedule (@Param(value = "userNo") Long userNo, @Param(value = "schedule") ScheduleRequestDto schedule);
+    Long getScheduleStatusNo(@Param(value = "userNo")Long userNo, @Param(value = "week") Integer week,
             @Param(value = "hour")Integer hour, @Param(value = "minute")Integer minute);
-    Integer getStatusNo(Integer scheduleNo);
+    Long getStatusNo(Long scheduleNo);
+    void updateSchedule (@Param(value = "schedule") ScheduleRequestDto schedule);
 }

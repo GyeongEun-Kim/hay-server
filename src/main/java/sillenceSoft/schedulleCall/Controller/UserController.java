@@ -74,22 +74,22 @@ public class UserController {
 
     @PostMapping("/nowStatus") //현재 상태글 변경
     public ResponseEntity setNowStatus (Authentication authentication,
-                              @RequestParam(name = "statusNo") int statusNo) {
-        Integer userNo = jwtProvider.getUserNo(authentication);
+                              @RequestParam(name = "statusNo") Long statusNo) {
+        Long userNo = jwtProvider.getUserNo(authentication);
         return userService.setNowStatus(userNo, statusNo);
     }
 
 
     @GetMapping("/user/status/show") //statusOn 이 1인지 0인지 확인. 공개상태인지 비공개인지
     public ResponseEntity getStatusOnOff (Authentication authentication) {
-        Integer userNo = jwtProvider.getUserNo(authentication);
+        Long userNo = jwtProvider.getUserNo(authentication);
         return userService.getStatusOn(userNo);
 
     }
 
     @PostMapping("/user/status/show") //statusOn을 1또는 0으로 바꿈
     public ResponseEntity statusOn (Authentication authentication) {
-        Integer userNo = jwtProvider.getUserNo(authentication);
+        Long userNo = jwtProvider.getUserNo(authentication);
         return userService.statusShow(userNo);
     }
 

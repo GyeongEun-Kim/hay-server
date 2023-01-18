@@ -32,8 +32,8 @@ public class UserService {
     private final JwtAuthenticationFilter filter;
 
     public UserDto login(UserRequestDto userRequestDto) throws NoSuchAlgorithmException {
-        //String id = sha256.encrypt(getIdBySocial(userRequestDto));
-        String id = sha256.encrypt("ccc"); //로컬테스트용
+        String id = sha256.encrypt(getIdBySocial(userRequestDto));
+        //String id = sha256.encrypt("ccc"); //로컬테스트용
         UserDto userDto = userRepository.findByIdAndSocial(id, userRequestDto.getSocial());
 
         if (userDto == null) { //신규회원인 경우
@@ -65,10 +65,10 @@ public class UserService {
     }
 
 
-    public ResponseEntity setNowStatus(Integer userNo, Integer statusNo) {
+    public ResponseEntity setNowStatus(Long userNo, Long statusNo) {
         String msg;
         try {
-            Integer nowStatus = userRepository.getStatusNo(userNo); //현재 상태글
+            Long nowStatus = userRepository.getStatusNo(userNo); //현재 상태글
             if (nowStatus == statusNo)
                 userRepository.cancelNowStatus(userNo); // 현재 상태글 해제
             else
@@ -122,7 +122,7 @@ public class UserService {
         }
     }
 
-    public ResponseEntity getStatusOn (Integer userNo) {
+    public ResponseEntity getStatusOn (Long userNo) {
         try {
             return new ResponseEntity(userRepository.getStatusOnAndPhone(userNo), HttpStatus.OK);
         }
@@ -132,7 +132,7 @@ public class UserService {
         }
     }
 
-    public ResponseEntity statusShow (Integer userNo) {
+    public ResponseEntity statusShow (Long userNo) {
         String msg;
         try {
             if (userRepository.getStatusOn(userNo)==true)

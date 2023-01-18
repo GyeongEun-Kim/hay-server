@@ -107,10 +107,10 @@ public class JWTProvider {
         return refreshToken;
     }
 
-    public Integer getUserNo (Authentication authentication) {
+    public Long getUserNo (Authentication authentication) {
         Claims principal = (Claims) authentication.getPrincipal();
         String id = (String)principal.get("id");
-        int userNo = userRepository.getUserNoById(id);
+        Long userNo = userRepository.getUserNoById(id);
         return userNo;
     }
 

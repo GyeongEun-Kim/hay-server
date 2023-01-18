@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ScheduleResponseDto {
-    private long scheduleNo;
+    private Long scheduleNo;
     private String status;
-    private Integer week;
+    private int week;
     private StartTime startTime;
     private EndTime endTime;
     private LocalDateTime modDt;

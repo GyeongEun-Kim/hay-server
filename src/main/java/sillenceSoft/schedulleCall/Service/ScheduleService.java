@@ -33,7 +33,7 @@ public class ScheduleService {
     private final UserRepository userRepository;
 
 
-    public ResponseEntity getMySchedule(Integer userNo) {
+    public ResponseEntity getMySchedule(Long userNo) {
         try {
             List<ScheduleResponseDto> schedule = scheduleRepository.getSchedule(userNo);
             return new ResponseEntity(schedule,HttpStatus.OK);
@@ -44,7 +44,7 @@ public class ScheduleService {
         }
     }
 
-    public ResponseEntity addSchedule(Integer userNo, ScheduleRequestDto schedule) {
+    public ResponseEntity addSchedule(Long userNo, ScheduleRequestDto schedule) {
         try {
             StatusDto statusDto = StatusDto.builder()
                     .userNo(userNo)
@@ -65,9 +65,9 @@ public class ScheduleService {
         }
     }
 
-    public ResponseEntity deleteSchedule(Integer userNo, Integer scheduleNo) {
+    public ResponseEntity deleteSchedule(Long userNo, Long scheduleNo) {
         try {
-            Integer statusNo = scheduleRepository.getStatusNo(scheduleNo);
+            Long statusNo = scheduleRepository.getStatusNo(scheduleNo);
             scheduleRepository.deleteSchedule(userNo, scheduleNo);
             statusRepository.deleteStatus(statusNo);
             //로직 수정하고픔
@@ -79,9 +79,9 @@ public class ScheduleService {
         }
         }
 
-        public ResponseEntity getOthersSchedule (Integer userNo, String accessUserPhone) throws IOException {
+        public ResponseEntity getOthersSchedule (Long userNo, String accessUserPhone) throws IOException {
 
-            Integer check = accessRepository.checkAccessOrNot(userNo, sha256.encrypt(accessUserPhone));
+            Long check = accessRepository.checkAccessOrNot(userNo, sha256.encrypt(accessUserPhone));
 
             if (check !=null) {
                 ResponseEntity schedule = getMySchedule(check);
@@ -91,7 +91,7 @@ public class ScheduleService {
             }
         }
 
-        public ResponseEntity toScheduleStatus(Integer userNo) {
+        public ResponseEntity toScheduleStatus(Long userNo) {
             LocalDateTime date = LocalDateTime.now();
             DayOfWeek dayOfWeek = date.getDayOfWeek();//요일 (월요일1, 일요일 7)
             int hour = date.getHour();
@@ -99,7 +99,7 @@ public class ScheduleService {
             int week = dayOfWeek.getValue();
             if (week == 7 ) week= 0;
             try {
-                Integer statusNo = scheduleRepository.getScheduleStatusNo(userNo, week, hour, minute );
+                Long statusNo = scheduleRepository.getScheduleStatusNo(userNo, week, hour, minute );
                 if (statusNo!= null)
                     userService.setNowStatus(userNo, statusNo);
                 userRepository.setStatusState(userNo);
@@ -113,7 +113,7 @@ public class ScheduleService {
 
         }
 
-        public ResponseEntity cancelScheduleStatus (Integer userNo) {
+        public ResponseEntity cancelScheduleStatus (Long userNo) {
             //user Repo statusState 값 변경.
             try {
                 userRepository.cancelStatusState(userNo); //스케줄상태 해제
@@ -129,6 +129,25 @@ public class ScheduleService {
                 return new ResponseEntity(e.toString(),HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
+        }
+
+        public ResponseEntity updateSchedule (Long userNo, ScheduleRequestDto schedule) {
+            try {
+                Long statusNo = scheduleRepository.getStatusNo(schedule.getScheduleNo());
+                /*
+               만약 보내주시는 json에 statusNo가 같이오면 위에 코드는 필요없음~
+                 */
+                statusRepository.updateStatus(schedule.getStatus(), statusNo,LocalDateTime.now());
+                schedule.setStatusNo(statusNo);
+                //상태글 업데이트
+                scheduleRepository.updateSchedule(schedule);
+
+                return new ResponseEntity(schedule, HttpStatus.OK);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
 }
 

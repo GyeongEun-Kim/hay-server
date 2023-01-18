@@ -20,7 +20,7 @@ public class AccessService {
     private final UserRepository userRepository;
     private final SHA_256 sha256;
 
-    public ResponseEntity canAccess (Integer userNo, String accessUserPhone) {
+    public ResponseEntity canAccess (Long userNo, String accessUserPhone) {
             try {
                 String encrypt = sha256.encrypt(accessUserPhone);
                 //중복체크 해야함
@@ -34,7 +34,7 @@ public class AccessService {
 
     }
 
-    public ResponseEntity cannotAccess (Integer userNo, String accessUserPhone) {
+    public ResponseEntity cannotAccess (Long userNo, String accessUserPhone) {
         try {
             String encrypt = sha256.encrypt(accessUserPhone);
             accessRepository.deleteAccess(userNo, encrypt);
@@ -46,7 +46,7 @@ public class AccessService {
         }
     }
 
-    public ResponseEntity getAccessList(Integer userNo) {
+    public ResponseEntity getAccessList(Long userNo) {
         try {
 
             List<String> accessList = accessRepository.getAccessList(userNo);

@@ -17,40 +17,40 @@ public interface UserRepository {
 
     UserDto findById(@Param("id")String id);
 
-    Integer getUserNoById (@Param("id")String id);
+    Long getUserNoById (@Param("id")String id);
 
-    void setNowStatus (@Param("userNo") int userNo, @Param("statusNo") int statusNo);
+    void setNowStatus (@Param("userNo") Long userNo, @Param("statusNo") Long statusNo);
 
-    StatusResponseDto getNowStatusAndPhone (Integer userNo);
+    StatusResponseDto getNowStatusAndPhone (Long userNo);
 
-    void cancelNowStatus (Integer userNo);
+    void cancelNowStatus (Long userNo);
 
-    void setStatusOn (@Param("userNo")Integer userNo);
+    void setStatusOn (@Param("userNo")Long userNo);
 
-    void setStatusOff (@Param("userNo")Integer userNo);
+    void setStatusOff (@Param("userNo")Long userNo);
 
-    Integer findByPhone(String phone);
+    Long findByPhone(String phone);
 
-    Integer getStatusNo (Integer userNo);
+    Long getStatusNo (Long userNo);
 
-    Map<String,Object> getStatusOnAndPhone (Integer userNo);
+    Map<String,Object> getStatusOnAndPhone (Long userNo);
 
-    boolean getStatusOn (Integer userNo);
+    boolean getStatusOn (Long userNo);
 
-    Long getNowStatus (Integer userNo);
+    Long getNowStatus (Long userNo);
 
     void updateLoginTime (@Param("id") String id, @Param("regTime")LocalDateTime regTime);
 
 
     UserDto findByIdAndSocial(@Param("id")String id, @Param("social")String social);
 
-    String getStatusState (Integer userNo);
+    String getStatusState (Long userNo);
 
-    void setStatusState (Integer userNo);
+    void setStatusState (Long userNo);
 
-    void cancelStatusState (Integer userNo);
+    void cancelStatusState (Long userNo);
 
-    String getPhoneByUserNo (Integer userNo);
+    String getPhoneByUserNo (Long userNo);
 
-    Integer getUserNoByPhone (String phone);
+    Long getUserNoByPhone (String phone);
 }

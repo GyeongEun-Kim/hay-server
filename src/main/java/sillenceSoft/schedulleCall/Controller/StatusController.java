@@ -34,27 +34,27 @@ public class StatusController {
 
     @GetMapping(value = "/status")
     public ResponseEntity getAllStatus (Authentication authentication) {
-        Integer userNo = jwtProvider.getUserNo(authentication);
+        Long userNo = jwtProvider.getUserNo(authentication);
         return statusService.getAllStatus(userNo);
     }
 
     @PostMapping("/status")
     public ResponseEntity addStatus (Authentication authentication, @RequestParam(name = "status") String newStatusMemo) {
-        Integer userNo = jwtProvider.getUserNo(authentication);
+        Long userNo = jwtProvider.getUserNo(authentication);
         return statusService.addStatus(userNo, newStatusMemo);
     }
 
     @DeleteMapping("/status")
-    public ResponseEntity deleteStatus (Authentication authentication, @RequestParam(name = "statusNo") int statusNo) {
-        Integer userNo = jwtProvider.getUserNo(authentication);
+    public ResponseEntity deleteStatus (Authentication authentication, @RequestParam(name = "statusNo") Long statusNo) {
+        Long userNo = jwtProvider.getUserNo(authentication);
         return statusService.deleteStatus(statusNo);
 
     }
 
     @PutMapping("/status")
     public ResponseEntity updateStatus (Authentication authentication, @RequestParam(name = "status") String status,
-                                @RequestParam(name = "statusNo") int statusNo) {
-        Integer userNo = jwtProvider.getUserNo(authentication);
+                                @RequestParam(name = "statusNo") Long statusNo) {
+        Long userNo = jwtProvider.getUserNo(authentication);
         return statusService.updateStatus(status, statusNo);
 
     }
@@ -62,7 +62,7 @@ public class StatusController {
 
     @GetMapping ("/status/others")
     public ResponseEntity getOthersStatus (Authentication authentication, @RequestParam(name = "phone", required = false) String phone) throws IOException {
-        Integer thisUserNo = jwtProvider.getUserNo(authentication);
+        Long thisUserNo = jwtProvider.getUserNo(authentication);
         if (phone!=null) //한명의 상태글 조회
             return statusService.getOthersStatus(thisUserNo, phone);
         else //내가 볼수 있는 모든 사람의 상태글 조회

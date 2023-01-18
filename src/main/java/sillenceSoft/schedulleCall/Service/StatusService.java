@@ -26,7 +26,7 @@ public class StatusService {
     private final SHA_256 sha256;
 
 
-    public ResponseEntity getAllStatus (Integer userNo) {
+    public ResponseEntity getAllStatus (Long userNo) {
         try {
             AllStatus allStatus = AllStatus.builder()
                     .allStatus(statusRepository.getAllStatus(userNo))
@@ -51,7 +51,7 @@ public class StatusService {
         }
     }
 
-    public ResponseEntity addStatus (Integer userNo, String newStatusMemo) {
+    public ResponseEntity addStatus (Long userNo, String newStatusMemo) {
 
         ResponseEntity responseEntity;
         StatusDto statusDto = StatusDto.builder()
@@ -77,7 +77,7 @@ public class StatusService {
     }
 
 
-    public ResponseEntity deleteStatus ( int statusNo) {
+    public ResponseEntity deleteStatus (Long statusNo) {
         try {
             statusRepository.deleteStatus( statusNo);
             return new ResponseEntity("success", HttpStatus.OK);
@@ -87,7 +87,7 @@ public class StatusService {
         }
     }
 
-    public ResponseEntity updateStatus (String status, int statusNo) {
+    public ResponseEntity updateStatus (String status, Long statusNo) {
         try {
             statusRepository.updateStatus(status, statusNo, LocalDateTime.now());
             return new ResponseEntity("success", HttpStatus.OK);
@@ -99,7 +99,7 @@ public class StatusService {
     }
 
 
-    public ResponseEntity getOthersStatus (Integer userNo, String accessUserPhone) throws IOException {
+    public ResponseEntity getOthersStatus (Long userNo, String accessUserPhone) throws IOException {
 //        //userNo유저가  accessUserPhone유저의 상태를 보려고 하는상황
 
         //1. accessUser가 statusOn돼있어야함
@@ -107,10 +107,10 @@ public class StatusService {
         String encryptedUserPhone = sha256.encrypt(userRepository.getPhoneByUserNo(userNo));
         String encryptedAccessUserPhone = sha256.encrypt(accessUserPhone);
 
-        Integer accessUserNo = userRepository.getUserNoByPhone(encryptedAccessUserPhone);
+        Long accessUserNo = userRepository.getUserNoByPhone(encryptedAccessUserPhone);
         boolean statusOn = userRepository.getStatusOn(accessUserNo);
 
-        Integer check = accessRepository.checkAccessOrNot(userNo,encryptedAccessUserPhone );
+        Long check = accessRepository.checkAccessOrNot(userNo,encryptedAccessUserPhone );
         System.out.println("check = " + check);
 
         if (statusOn==true && check!=null) {
@@ -124,7 +124,7 @@ public class StatusService {
 
     }
 
-    public ResponseEntity getAllOthersStatus (Integer thisUserNo) {
+    public ResponseEntity getAllOthersStatus (Long thisUserNo) {
         try {
             String phone = userRepository.getPhoneByUserNo(thisUserNo);
             List<StatusResponseDto> allOthersStatus = statusRepository.getAllOthersStatus(phone);

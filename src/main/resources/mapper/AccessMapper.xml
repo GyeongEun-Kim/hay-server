@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="sillenceSoft.schedulleCall.Repository.AccessRepository">
-    <select id="getAccessList" parameterType="Integer" resultType="String">
+    <select id="getAccessList" parameterType="Long" resultType="String">
         select accessUserPhone as phone
         from Access
         where userNo = ${userNo}
@@ -20,7 +20,7 @@
         delete from Access where accessUserPhone = #{accessUserPhone} and userNo = ${userNo} ;
     </delete>
 
-    <select id="checkAccessOrNot" resultType="Integer">
+    <select id="checkAccessOrNot" resultType="Long">
         select b.userNo
         from Access as a
         join User as b

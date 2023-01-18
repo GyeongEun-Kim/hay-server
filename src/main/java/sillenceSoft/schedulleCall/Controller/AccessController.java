@@ -25,7 +25,7 @@ public class AccessController {
     @PostMapping(value = "/access") // 숨김 해제
     public ResponseEntity canAccess (Authentication authentication,
                                      @RequestParam(name = "accessUserPhone") String accessUserPhone) {
-        Integer userNo = jwtProvider.getUserNo(authentication);
+        Long userNo = jwtProvider.getUserNo(authentication);
         return accessService.canAccess(userNo, accessUserPhone);
     }
 
@@ -33,13 +33,13 @@ public class AccessController {
     public ResponseEntity cannotAccess (Authentication authentication,
                                 @RequestParam(name = "accessUserPhone") String accessUserPhone)
     {
-        Integer userNo = jwtProvider.getUserNo(authentication);
+        Long userNo = jwtProvider.getUserNo(authentication);
         return accessService.cannotAccess(userNo, accessUserPhone);
     }
 
     @GetMapping(value = "/access")
     public ResponseEntity getAccessList(Authentication authentication) {
-        Integer userNo = jwtProvider.getUserNo(authentication);
+        Long userNo = jwtProvider.getUserNo(authentication);
         return accessService.getAccessList(userNo);
 
     }
