@@ -95,15 +95,17 @@ public class UserService {
                 refreshToken = refreshToken.substring(7);
                 if (jwtProvider.validTokenAndReturnBody(refreshToken) != null) {//유효하면
                     Claims claims = jwtProvider.validTokenAndReturnBody(refreshToken);
-                    String id = (String) claims.get("id");
+                    Long userNo = Long.valueOf(claims.get("userNo").toString());
+                    String social = claims.get("social").toString();
 
                     //DB에 로그인 시간 업데이트
                     LocalDateTime now = LocalDateTime.now();
-                  //  userRepository.updateLoginTime(id,now);
+                    String id = userRepository.getIdByUserNo(userNo);
+                    userRepository.updateLoginTime(id,social,now);
 
                     /// 토큰 발급 (access, refresh 둘다 재발급)
-                    String newAccessToken = jwtProvider.createAccessToken(id, now.toString());
-                    String newRefreshToken = jwtProvider.createRefreshToken(id, now.toString());
+                    String newAccessToken = jwtProvider.createAccessToken(userNo,social);
+                    String newRefreshToken = jwtProvider.createRefreshToken(userNo,social);
                     /// 헤더에 엑세스, 리프레시 토큰 추가
                     jwtProvider.setHeaderAccessToken(newAccessToken, response);
                     jwtProvider.setHeaderRefreshToken(newRefreshToken, response);

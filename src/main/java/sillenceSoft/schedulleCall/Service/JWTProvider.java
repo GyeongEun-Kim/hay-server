@@ -34,10 +34,11 @@ public class JWTProvider {
     }
 
     // 엑세스 토큰 생성
-    public String createAccessToken(String id, String regTime) {
+    public String createAccessToken(Long userNo, String social) {
         Claims claims = Jwts.claims().setSubject("JWT제목"); // JWT payload 에 저장되는 정보단위
-        claims.put("id",id); // 정보는 key / value 쌍으로 저장된다.
-        claims.put("regTime", regTime.toString());
+        claims.put("userNo",userNo); // 정보는 key / value 쌍으로 저장된다.
+        claims.put("social", social);
+
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
@@ -48,10 +49,11 @@ public class JWTProvider {
                 .compact();
     }
     // 리프레시 토큰 생성
-    public String createRefreshToken(String id, String regTime) {
+    public String createRefreshToken(Long userNo, String social) {
         Claims claims = Jwts.claims().setSubject("JWT제목"); // JWT payload 에 저장되는 정보단위
-        claims.put("id",id); // 정보는 key / value 쌍으로 저장된다.
-        claims.put("regTime", regTime);
+        claims.put("userNo",userNo); // 정보는 key / value 쌍으로 저장된다.
+        claims.put("social", social);
+
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
@@ -109,10 +111,15 @@ public class JWTProvider {
 
     public Long getUserNo (Authentication authentication) {
         Claims principal = (Claims) authentication.getPrincipal();
-        String id = (String)principal.get("id");
-        Long userNo = userRepository.getUserNoById(id);
-        return userNo;
+        return (Long) principal.get("userNo");
     }
+
+    public String getSocial (Authentication authentication) {
+        Claims principal = (Claims) authentication.getPrincipal();
+        return (String) principal.get("social");
+    }
+
+
 
 
 

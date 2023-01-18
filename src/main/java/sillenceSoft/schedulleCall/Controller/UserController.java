@@ -51,8 +51,8 @@ public class UserController {
     public ResponseEntity login (@ModelAttribute UserRequestDto userRequestDto,HttpServletResponse response) throws NoSuchAlgorithmException {
         try {
             UserDto userDto = userService.login(userRequestDto); //유저 정보
-            String accessToken = jwtProvider.createAccessToken(userDto.getId(), userDto.getRegTime().toString());
-            String refreshToken = jwtProvider.createRefreshToken(userDto.getId(), userDto.getRegTime().toString());
+            String accessToken = jwtProvider.createAccessToken(userDto.getUserNo(), userDto.getSocial());
+            String refreshToken = jwtProvider.createRefreshToken(userDto.getUserNo(), userDto.getSocial());
 
             jwtProvider.setHeaderAccessToken(accessToken, response);
             jwtProvider.setHeaderRefreshToken(refreshToken, response);

@@ -97,6 +97,10 @@
     <select id="getUserNoByPhone" resultType="Long">
         select userNo from User where phone=#{phone} order by regTime desc limit 1;
     </select>
+
+    <select id="getIdByUserNo" resultType="String">
+        select id from User where userNo = ${userNo};
+    </select>
 </mapper>
 
 
