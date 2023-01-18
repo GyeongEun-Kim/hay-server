@@ -111,7 +111,9 @@ public class JWTProvider {
 
     public Long getUserNo (Authentication authentication) {
         Claims principal = (Claims) authentication.getPrincipal();
-        return (Long) principal.get("userNo");
+        Long userNo = Long.valueOf(principal.get("userNo").toString());
+        System.out.println("userNo = " + userNo);
+        return userNo;
     }
 
     public String getSocial (Authentication authentication) {
