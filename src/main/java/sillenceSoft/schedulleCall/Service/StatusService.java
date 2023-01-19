@@ -104,22 +104,21 @@ public class StatusService {
 
         //1. accessUser가 statusOn돼있어야함
         //2. accessUser가 userNo를 숨김해제해야함
-        String encryptedUserPhone = sha256.encrypt(userRepository.getPhoneByUserNo(userNo));
+        String encryptedUserPhone = userRepository.getPhoneByUserNo(userNo);
         String encryptedAccessUserPhone = sha256.encrypt(accessUserPhone);
 
         Long accessUserNo = userRepository.getUserNoByPhone(encryptedAccessUserPhone);
         boolean statusOn = userRepository.getStatusOn(accessUserNo);
 
-        Long check = accessRepository.checkAccessOrNot(userNo,encryptedAccessUserPhone );
+        Long check = accessRepository.checkAccessOrNot(accessUserNo,encryptedUserPhone );
         System.out.println("check = " + check);
 
-        if (statusOn==true && check!=null) {
+        if (statusOn==true && check==1) {
             StatusResponseDto nowStatusAndPhone = userRepository.getNowStatusAndPhone(accessUserNo);
-            if (nowStatusAndPhone==null) return new ResponseEntity("사용자의 현재 상태글이 없습니다", HttpStatus.OK);
-            else return new ResponseEntity(nowStatusAndPhone,HttpStatus.OK);
+            return new ResponseEntity(nowStatusAndPhone,HttpStatus.OK);
         }
         else {
-            return new ResponseEntity("사용자의 상태글에 접근할 수 없습니다.",HttpStatus.OK);
+            return new ResponseEntity("사용자의 상태글에 접근할 수 없습니다.",HttpStatus.UNAUTHORIZED);
         }
 
     }

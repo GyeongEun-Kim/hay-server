@@ -80,14 +80,19 @@ public class ScheduleService {
         }
 
         public ResponseEntity getOthersSchedule (Long userNo, String accessUserPhone) throws IOException {
+            //userNo가 accessUserPhone의 스케줄을 보려고 하는상태
+            String encryptedAccessUserPhone = sha256.encrypt(accessUserPhone);
+            String encryptedUserPhone = userRepository.getPhoneByUserNo(userNo);
 
-            Long check = accessRepository.checkAccessOrNot(userNo, sha256.encrypt(accessUserPhone));
+            Long accessUserNo = userRepository.getUserNoByPhone(encryptedAccessUserPhone);
 
-            if (check !=null) {
-                ResponseEntity schedule = getMySchedule(check);
+            Long check = accessRepository.checkAccessOrNot(accessUserNo,encryptedUserPhone );
+
+            if (check ==1) {
+                ResponseEntity schedule = getMySchedule(accessUserNo);
                 return schedule;
             } else { //접근 자체가 불가할때
-                return new ResponseEntity("해당 사용자의 스케줄을 볼 수 없습니다",HttpStatus.NO_CONTENT);
+                return new ResponseEntity("해당 사용자의 스케줄을 볼 수 없습니다",HttpStatus.UNAUTHORIZED);
             }
         }
 
