@@ -34,8 +34,7 @@ public class SHA_256 {
 
     public String encrypt(String text) {
 
-        //String algorithm = "SHA-256"; // if you perfer SHA-2
-        String algorithm = "SHA3-256";
+        String algorithm = "SHA-256";
 
         byte[] shaInBytes = digest(text.getBytes(UTF_8), algorithm);
         return bytesToHex(shaInBytes);
