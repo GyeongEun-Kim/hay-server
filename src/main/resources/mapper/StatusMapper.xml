@@ -46,9 +46,9 @@
     </select>
 
     <select id="checkIfPresent" resultType="Long">
-        select count(statusNo)
+        select statusNo
         from Status
-        where status = #{status} and userNo=${userNo};
+        where status = #{status} and userNo=${userNo} and isFromSchedule= ${isFromSchedule};
     </select>
 
     <select id="checkIsFromSchedule" resultType="boolean">

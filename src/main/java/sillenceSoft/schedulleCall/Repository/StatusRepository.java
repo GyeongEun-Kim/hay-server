@@ -22,6 +22,6 @@ public interface StatusRepository  {
     void updateStatus (@Param("status") String status,@Param("statusNo") Long StatusNo, @Param("modDt")LocalDateTime modDt);
 
     List<StatusResponseDto> getAllOthersStatus(String phone);
-    Long checkIfPresent (@Param(value = "userNo") Long userNo, @Param(value = "status") String status);
+    Long checkIfPresent (@Param(value = "userNo") Long userNo, @Param(value = "status") String status, @Param("isFromSchedule")Boolean isFromSchedule);
     boolean checkIsFromSchedule (Long statusNo);
 }

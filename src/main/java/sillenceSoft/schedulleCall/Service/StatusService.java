@@ -61,7 +61,7 @@ public class StatusService {
                     .isFromSchedule(false)
                     .build();
         try {
-            if (statusRepository.checkIfPresent(userNo,statusDto.getStatus())== 0) {
+            if (statusRepository.checkIfPresent(userNo,statusDto.getStatus(),false)== 0) {
                 statusRepository.addStatus(statusDto);
                 responseEntity = new ResponseEntity(statusDto, HttpStatus.OK);
             }
@@ -87,10 +87,14 @@ public class StatusService {
         }
     }
 
-    public ResponseEntity updateStatus (String status, Long statusNo) {
+    public ResponseEntity updateStatus (Long userNo, String status, Long statusNo) {
         try {
-            statusRepository.updateStatus(status, statusNo, LocalDateTime.now());
-            return new ResponseEntity("success", HttpStatus.OK);
+            if (statusRepository.checkIfPresent(userNo, status, false)>0)
+                return new ResponseEntity("이미 같은 상태글이 존재합니다",HttpStatus.CONFLICT);
+            else {
+                statusRepository.updateStatus(status, statusNo, LocalDateTime.now());
+                return new ResponseEntity("success", HttpStatus.OK);
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -118,7 +122,7 @@ public class StatusService {
             return new ResponseEntity(nowStatusAndPhone,HttpStatus.OK);
         }
         else {
-            return new ResponseEntity("사용자의 상태글에 접근할 수 없습니다.",HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity("사용자의 상태글에 접근할 수 없습니다.",HttpStatus.NO_CONTENT);
         }
 
     }

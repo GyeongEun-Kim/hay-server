@@ -92,7 +92,7 @@ public class ScheduleService {
                 ResponseEntity schedule = getMySchedule(accessUserNo);
                 return schedule;
             } else { //접근 자체가 불가할때
-                return new ResponseEntity("해당 사용자의 스케줄을 볼 수 없습니다",HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity("해당 사용자의 스케줄을 볼 수 없습니다",HttpStatus.NO_CONTENT);
             }
         }
 

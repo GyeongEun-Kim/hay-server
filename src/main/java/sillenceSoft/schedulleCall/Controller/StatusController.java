@@ -55,7 +55,7 @@ public class StatusController {
     public ResponseEntity updateStatus (Authentication authentication, @RequestParam(name = "status") String status,
                                 @RequestParam(name = "statusNo") Long statusNo) {
         Long userNo = jwtProvider.getUserNo(authentication);
-        return statusService.updateStatus(status, statusNo);
+        return statusService.updateStatus(userNo, status, statusNo);
 
     }
 
