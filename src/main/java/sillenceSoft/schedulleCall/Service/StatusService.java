@@ -24,6 +24,7 @@ public class StatusService {
     private final UserRepository userRepository;
     private final AccessRepository accessRepository;
     private final SHA_256 sha256;
+    private final ScheduleService scheduleService;
 
 
     public ResponseEntity getAllStatus (Long userNo) {
@@ -113,11 +114,16 @@ public class StatusService {
 
         Long accessUserNo = userRepository.getUserNoByPhone(encryptedAccessUserPhone);
         boolean statusOn = userRepository.getStatusOn(accessUserNo);
-
+        //상태글 공개 여부
         Long check = accessRepository.checkAccessOrNot(accessUserNo,encryptedUserPhone );
-        System.out.println("check = " + check);
+        //access 여부
+        String statusState = userRepository.getStatusState(accessUserNo);
+        //상태글상태/ 스케줄 상태
 
         if (statusOn==true && check==1) {
+            if(statusState.equals(1)) { //스케줄상태
+                scheduleService.toScheduleStatus(accessUserNo);
+            }
             StatusResponseDto nowStatusAndPhone = userRepository.getNowStatusAndPhone(accessUserNo);
             return new ResponseEntity(nowStatusAndPhone,HttpStatus.OK);
         }

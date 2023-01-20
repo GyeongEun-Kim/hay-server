@@ -3,6 +3,9 @@ package sillenceSoft.schedulleCall.Controller;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,46 +30,64 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@Slf4j
 public class StatusController {
     private final ScheduleService scheduleService;
     private final StatusService statusService;
     private final JWTProvider jwtProvider;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @GetMapping(value = "/status")
-    public ResponseEntity getAllStatus (Authentication authentication) {
+    public ResponseEntity getAllStatus (HttpServletRequest request,Authentication authentication) {
         Long userNo = jwtProvider.getUserNo(authentication);
-        return statusService.getAllStatus(userNo);
+
+        ResponseEntity responseEntity = statusService.getAllStatus(userNo);
+        logger.info(request.getRequestURI()+" Http Status: "+responseEntity.getStatusCode()+" "+responseEntity.getStatusCodeValue());
+        return responseEntity;
     }
 
     @PostMapping("/status")
-    public ResponseEntity addStatus (Authentication authentication, @RequestParam(name = "status") String newStatusMemo) {
+    public ResponseEntity addStatus (HttpServletRequest request, Authentication authentication, @RequestParam(name = "status") String newStatusMemo) {
         Long userNo = jwtProvider.getUserNo(authentication);
-        return statusService.addStatus(userNo, newStatusMemo);
+        ResponseEntity responseEntity = statusService.addStatus(userNo, newStatusMemo);
+        logger.info(request.getRequestURI()+" Http Status: "+responseEntity.getStatusCode()+" "+responseEntity.getStatusCodeValue());
+        return responseEntity;
     }
 
     @DeleteMapping("/status")
-    public ResponseEntity deleteStatus (Authentication authentication, @RequestParam(name = "statusNo") Long statusNo) {
+    public ResponseEntity deleteStatus (HttpServletRequest request, Authentication authentication, @RequestParam(name = "statusNo") Long statusNo) {
         Long userNo = jwtProvider.getUserNo(authentication);
-        return statusService.deleteStatus(statusNo);
+        ResponseEntity responseEntity = statusService.deleteStatus(statusNo);
+        logger.info(request.getRequestURI()+" Http Status: "+responseEntity.getStatusCode()+" "+responseEntity.getStatusCodeValue());
+        return responseEntity;
 
     }
 
     @PutMapping("/status")
-    public ResponseEntity updateStatus (Authentication authentication, @RequestParam(name = "status") String status,
+    public ResponseEntity updateStatus (HttpServletRequest request, Authentication authentication, @RequestParam(name = "status") String status,
                                 @RequestParam(name = "statusNo") Long statusNo) {
         Long userNo = jwtProvider.getUserNo(authentication);
-        return statusService.updateStatus(userNo, status, statusNo);
+        ResponseEntity responseEntity = statusService.updateStatus(userNo, status, statusNo);
+        logger.info(request.getRequestURI()+" Http Status: "+responseEntity.getStatusCode()+" "+responseEntity.getStatusCodeValue());
+        return responseEntity;
 
     }
 
 
     @GetMapping ("/status/others")
-    public ResponseEntity getOthersStatus (Authentication authentication, @RequestParam(name = "phone", required = false) String phone) throws IOException {
+    public ResponseEntity getOthersStatus (HttpServletRequest request, Authentication authentication, @RequestParam(name = "phone", required = false) String phone) throws IOException {
         Long thisUserNo = jwtProvider.getUserNo(authentication);
+        ResponseEntity responseEntity;
         if (phone!=null) //한명의 상태글 조회
-            return statusService.getOthersStatus(thisUserNo, phone);
-        else //내가 볼수 있는 모든 사람의 상태글 조회
-            return statusService.getAllOthersStatus(thisUserNo);
+
+            responseEntity = statusService.getOthersStatus(thisUserNo, phone);
+
+         else //내가 볼수 있는 모든 사람의 상태글 조회
+
+            responseEntity = statusService.getAllOthersStatus(thisUserNo);
+
+        logger.info(request.getRequestURI()+" Http Status: "+responseEntity.getStatusCode()+" "+responseEntity.getStatusCodeValue());
+        return responseEntity;
     }
 
 

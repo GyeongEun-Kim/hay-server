@@ -98,15 +98,14 @@ public class ScheduleService {
 
         public ResponseEntity toScheduleStatus(Long userNo) {
             LocalDateTime date = LocalDateTime.now();
-            DayOfWeek dayOfWeek = date.getDayOfWeek();//요일 (월요일1, 일요일 7)
+            DayOfWeek dayOfWeek = date.getDayOfWeek(); //요일 (월요일1, 일요일 7)
             int hour = date.getHour();
             int minute = date.getMinute();
             int week = dayOfWeek.getValue();
             if (week == 7 ) week= 0;
             try {
                 Long statusNo = scheduleRepository.getScheduleStatusNo(userNo, week, hour, minute );
-                if (statusNo!= null)
-                    userService.setNowStatus(userNo, statusNo);
+                userService.setNowStatus(userNo, statusNo);
                 userRepository.setStatusState(userNo);
                 return new ResponseEntity("success",HttpStatus.OK);
             }
@@ -114,9 +113,9 @@ public class ScheduleService {
                 e.printStackTrace();
                 return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
-
-
         }
+
+
 
         public ResponseEntity cancelScheduleStatus (Long userNo) {
             //user Repo statusState 값 변경.
