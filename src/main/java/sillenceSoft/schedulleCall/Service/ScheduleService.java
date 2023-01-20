@@ -85,7 +85,9 @@ public class ScheduleService {
             String encryptedUserPhone = userRepository.getPhoneByUserNo(userNo);
 
             Long accessUserNo = userRepository.getUserNoByPhone(encryptedAccessUserPhone);
-
+            if(accessUserNo ==null) {
+                return new ResponseEntity("가입하지 않은 사용자입니다.",HttpStatus.NO_CONTENT);
+            }
             Long check = accessRepository.checkAccessOrNot(accessUserNo,encryptedUserPhone );
 
             if (check ==1) {

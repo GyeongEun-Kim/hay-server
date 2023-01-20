@@ -113,12 +113,16 @@ public class StatusService {
         String encryptedAccessUserPhone = sha256.encrypt(accessUserPhone);
 
         Long accessUserNo = userRepository.getUserNoByPhone(encryptedAccessUserPhone);
-        boolean statusOn = userRepository.getStatusOn(accessUserNo);
+        Boolean statusOn = userRepository.getStatusOn(accessUserNo);
         //상태글 공개 여부
         Long check = accessRepository.checkAccessOrNot(accessUserNo,encryptedUserPhone );
         //access 여부
         String statusState = userRepository.getStatusState(accessUserNo);
         //상태글상태/ 스케줄 상태
+
+        if(accessUserNo== null) {
+            return new ResponseEntity("가입하지 않은 사용자입니다.",HttpStatus.NO_CONTENT);
+        }
 
         if (statusOn==true && check==1) {
             if(statusState.equals(1)) { //스케줄상태
