@@ -66,19 +66,22 @@ public class UserService {
 
 
     public ResponseEntity setNowStatus(Long userNo, Long statusNo) {
-        String msg;
+        Boolean msg;
         try {
             Long nowStatus = userRepository.getStatusNo(userNo); //현재 상태글
-            if (nowStatus == statusNo)
-                userRepository.cancelNowStatus(userNo); // 현재 상태글 해제
-            else
+            if (nowStatus ==null) {
                 userRepository.setNowStatus(userNo, statusNo);
-            msg = "success";
+                msg = true;
+            }
+            else if (nowStatus.equals(statusNo)){
+                userRepository.cancelNowStatus(userNo); // 현재 상태글 해제
+                msg = false;
+            }
+            else msg =true;
             return new ResponseEntity(msg,HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            msg = e.toString();
-            return new ResponseEntity(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
 
