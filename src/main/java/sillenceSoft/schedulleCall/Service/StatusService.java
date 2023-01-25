@@ -39,7 +39,7 @@ public class StatusService {
 
             for (Map m : allStatus.getAllStatus()) {
                 if (nowStatus != null) {
-                    if (m.get("statusNo")==nowStatus) {
+                    if (Long.valueOf(m.get("statusNo").toString()).equals(nowStatus)) {
                         m.put("selected", true);
                     }
                 }
@@ -62,7 +62,7 @@ public class StatusService {
                     .isFromSchedule(false)
                     .build();
         try {
-            if (statusRepository.checkIfPresent(userNo,statusDto.getStatus(),false)== 0) {
+            if (statusRepository.checkIfPresent(userNo,statusDto.getStatus(),false)== null) {
                 statusRepository.addStatus(statusDto);
                 responseEntity = new ResponseEntity(statusDto, HttpStatus.OK);
             }
@@ -90,7 +90,7 @@ public class StatusService {
 
     public ResponseEntity updateStatus (Long userNo, String status, Long statusNo) {
         try {
-            if (statusRepository.checkIfPresent(userNo, status, false)>0)
+            if (statusRepository.checkIfPresent(userNo, status, false)!=null)
                 return new ResponseEntity("이미 같은 상태글이 존재합니다",HttpStatus.CONFLICT);
             else {
                 statusRepository.updateStatus(status, statusNo, LocalDateTime.now());
