@@ -107,8 +107,9 @@ public class ScheduleService {
             if (week == 7 ) week= 0;
             try {
                 Long statusNo = scheduleRepository.getScheduleStatusNo(userNo, week, hour, minute );
-                userService.setNowStatus(userNo, statusNo);
                 userRepository.setStatusState(userNo);
+                userService.setNowStatus(userNo, statusNo);
+
                 return new ResponseEntity("success",HttpStatus.OK);
             }
             catch (Exception e) {

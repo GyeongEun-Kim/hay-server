@@ -80,8 +80,11 @@ public class UserService {
             else {
                 if (userRepository.getStatusState(userNo).equals("1")) { //스케줄 상태
                     userRepository.cancelStatusState(userNo);
+                    if (statusNo==null)
+                        userRepository.cancelNowStatus(userNo);
+                    else
+                        userRepository.setNowStatus(userNo, statusNo);
                 }
-                userRepository.setNowStatus(userNo, statusNo);
                 msg =true;
             }
             return new ResponseEntity(msg,HttpStatus.OK);
