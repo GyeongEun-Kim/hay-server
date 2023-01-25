@@ -77,7 +77,13 @@ public class UserService {
                 userRepository.cancelNowStatus(userNo); // 현재 상태글 해제
                 msg = false;
             }
-            else msg =true;
+            else {
+                if (userRepository.getStatusState(userNo).equals("1")) { //스케줄 상태
+                    userRepository.cancelStatusState(userNo);
+                }
+                userRepository.setNowStatus(userNo, statusNo);
+                msg =true;
+            }
             return new ResponseEntity(msg,HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
