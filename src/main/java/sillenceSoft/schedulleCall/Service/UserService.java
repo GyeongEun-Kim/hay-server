@@ -34,8 +34,8 @@ public class UserService {
     private final StatusRepository statusRepository;
 
     public UserDto login(UserRequestDto userRequestDto)  {
-        //String id = sha256.encrypt(getIdBySocial(userRequestDto));
-        String id = sha256.encrypt("iii"); //로컬테스트용
+        String id = sha256.encrypt(getIdBySocial(userRequestDto));
+        //String id = sha256.encrypt("iii"); //로컬테스트용
         UserDto userDto = userRepository.findByIdAndSocial(id, userRequestDto.getSocial());
 
         if (userDto == null) { //신규회원인 경우
