@@ -51,9 +51,8 @@
         where status = #{status} and userNo=${userNo} and isFromSchedule= ${isFromSchedule};
     </select>
 
-    <select id="checkIsFromSchedule" resultType="boolean">
-        select isFromSchedule from Status where statusNo = ${statusNo};
+    <select id="getStatus" resultType="sillenceSoft.schedulleCall.Dto.StatusDto" >
+        select * from Status where statusNo = ${statusNo};
     </select>
-
 
 </mapper>

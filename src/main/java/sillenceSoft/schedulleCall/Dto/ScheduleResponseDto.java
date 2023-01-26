@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class ScheduleResponseDto {
     private Long scheduleNo;
     private String status;
+    private Long statusNo;
     private int week;
     private StartTime startTime;
     private EndTime endTime;

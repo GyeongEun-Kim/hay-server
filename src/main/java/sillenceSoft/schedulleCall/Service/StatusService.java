@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import sillenceSoft.schedulleCall.Dto.AllStatus;
 import sillenceSoft.schedulleCall.Dto.StatusDto;
 import sillenceSoft.schedulleCall.Dto.StatusResponseDto;
+import sillenceSoft.schedulleCall.Dto.UserDto;
 import sillenceSoft.schedulleCall.Repository.AccessRepository;
 import sillenceSoft.schedulleCall.Repository.StatusRepository;
 import sillenceSoft.schedulleCall.Repository.UserRepository;
@@ -80,8 +81,14 @@ public class StatusService {
 
     public ResponseEntity deleteStatus (Long statusNo) {
         try {
-            statusRepository.deleteStatus( statusNo);
-            return new ResponseEntity("success", HttpStatus.OK);
+            StatusDto status = statusRepository.getStatus(statusNo);
+            if (status != null) {
+                statusRepository.deleteStatus( statusNo);
+                return new ResponseEntity("success", HttpStatus.OK);
+            }else {
+                return new ResponseEntity("해당 상태글이 존재하지 않습니다", HttpStatus.NO_CONTENT);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -90,7 +97,10 @@ public class StatusService {
 
     public ResponseEntity updateStatus (Long userNo, String status, Long statusNo) {
         try {
-            if (statusRepository.checkIfPresent(userNo, status, false)!=null)
+            if (statusRepository.getStatus(statusNo)==null) {
+                return new ResponseEntity("수정하려는 상태글이 존재하지 않습니다",HttpStatus.NO_CONTENT);
+            }
+            else if (statusRepository.checkIfPresent(userNo, status, false)!=null)
                 return new ResponseEntity("이미 같은 상태글이 존재합니다",HttpStatus.CONFLICT);
             else {
                 statusRepository.updateStatus(status, statusNo, LocalDateTime.now());
@@ -104,31 +114,32 @@ public class StatusService {
     }
 
 
-    public ResponseEntity getOthersStatus (Long userNo, String accessUserPhone) throws IOException {
+    public ResponseEntity getOthersStatus (Long userNo, String accessUserPhone) {
 //        //userNo유저가  accessUserPhone유저의 상태를 보려고 하는상황
-
+        UserDto userDto = userRepository.getUserDto(userNo);
         //1. accessUser가 statusOn돼있어야함
         //2. accessUser가 userNo를 숨김해제해야함
-        String encryptedUserPhone = userRepository.getPhoneByUserNo(userNo);
+        String encryptedUserPhone = userDto.getPhone();
         String encryptedAccessUserPhone = sha256.encrypt(accessUserPhone);
 
-        Long accessUserNo = userRepository.getUserNoByPhone(encryptedAccessUserPhone);
-        Boolean statusOn = userRepository.getStatusOn(accessUserNo);
-        //상태글 공개 여부
-        Long check = accessRepository.checkAccessOrNot(accessUserNo,encryptedUserPhone );
-        //access 여부
-        String statusState = userRepository.getStatusState(accessUserNo);
-        //상태글상태/ 스케줄 상태
-
-        if(accessUserNo== null) {
+        UserDto accessUserDto = userRepository.getUserDtoByPhone(encryptedAccessUserPhone);
+        if(accessUserDto== null) {
             return new ResponseEntity("가입하지 않은 사용자입니다.",HttpStatus.NO_CONTENT);
         }
 
+        Boolean statusOn = accessUserDto.isStatusOn();
+        //상태글 공개 여부 . 1이여야 볼 수 있음
+        Long check = accessRepository.checkAccessOrNot(accessUserDto.getUserNo(), encryptedUserPhone );
+        //access 여부 . 1이여야 볼 수 있음
+        String statusState = accessUserDto.getStatusState();
+        //상태글상태/ 스케줄 상태
+
+
         if (statusOn==true && check==1) {
             if(statusState.equals(1)) { //스케줄상태
-                scheduleService.toScheduleStatus(accessUserNo);
+                scheduleService.toScheduleStatus(accessUserDto.getUserNo());
             }
-            StatusResponseDto nowStatusAndPhone = userRepository.getNowStatusAndPhone(accessUserNo);
+            StatusResponseDto nowStatusAndPhone = userRepository.getNowStatusAndPhone(accessUserDto.getUserNo());
             return new ResponseEntity(nowStatusAndPhone,HttpStatus.OK);
         }
         else {

@@ -17,11 +17,16 @@ import java.util.Map;
 public interface StatusRepository  {
 
     List<Map<String,Object>> getAllStatus (@Param("userNo") Long userNo);
+
     Long addStatus (@Param("statusDto")StatusDto statusDto);
+
     void deleteStatus (@Param("statusNo") Long statusNo);
+
     void updateStatus (@Param("status") String status,@Param("statusNo") Long StatusNo, @Param("modDt")LocalDateTime modDt);
 
     List<StatusResponseDto> getAllOthersStatus(String phone);
+
     Long checkIfPresent (@Param(value = "userNo") Long userNo, @Param(value = "status") String status, @Param("isFromSchedule")Boolean isFromSchedule);
-    boolean checkIsFromSchedule (Long statusNo);
+
+    StatusDto getStatus (Long statusNo);
 }

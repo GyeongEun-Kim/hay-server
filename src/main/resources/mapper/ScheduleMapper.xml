@@ -7,6 +7,7 @@
 <mapper namespace="sillenceSoft.schedulleCall.Repository.ScheduleRepository">
     <resultMap id="ScheduleResponseDto" type="sillenceSoft.schedulleCall.Dto.ScheduleResponseDto" >
         <result property="scheduleNo" column="scheduleNo"/>
+        <result property="statusNo" column="statusNo"/>
         <result property="status" column="status"/>
         <result property="week" column="week"/>
         <result property="modDt" column="modDt"/>
@@ -32,7 +33,7 @@
     </delete>
 
     <select id="getSchedule" resultMap="ScheduleResponseDto">
-        select a.scheduleNo, b.status, a.week, a.modDt, a.startHour, a.startMinute, a.endHour, a.endMinute
+        select a.scheduleNo, b.status, b.statusNo, a.week, a.modDt, a.startHour, a.startMinute, a.endHour, a.endMinute
         from Schedule as a
         join Status as b
         on a.statusNo = b.statusNo
@@ -58,4 +59,8 @@
         endHour = ${schedule.endTime.hour}, endMinute = ${schedule.endTime.minute}, modDt =#{schedule.modDt}
         where scheduleNo = ${schedule.scheduleNo};
     </update>
+
+    <select id="getScheduleDto" resultMap="ScheduleResponseDto">
+        select * from Schedule where scheduleNo = ${scheduleNo};
+    </select>
 </mapper>

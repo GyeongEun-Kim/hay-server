@@ -31,7 +31,10 @@
     </select>
 
     <update id="setNowStatus">
-        update User set statusNo = ${statusNo} where userNo = ${userNo};
+        update User set statusNo =
+        CASE WHEN ${toNull} = true
+        THEN NULL ELSE ${statusNo} END
+        where userNo = ${userNo};
     </update>
 
     <update id="setStatusOn">
@@ -46,9 +49,6 @@
         select userNo from User where phone=#{phone} order by regTime desc limit 1;
     </select>
 
-    <update id="cancelNowStatus">
-        update User set statusNo = null where userNo=${userNo}
-    </update>
 
     <select id="getStatusNo" resultType="Long">
         select statusNo from User where userNo=${userNo};
@@ -83,24 +83,31 @@
     </select>
 
     <update id="setStatusState">
-        update User set statusState = '1' where userNo = ${userNo};
+        update User set statusState = #{state} where userNo = ${userNo};
     </update>
 
-    <update id="cancelStatusState">
-        update User set statusState = '0' where userNo = ${userNo};
-    </update>
 
     <select id="getPhoneByUserNo" resultType="String">
         select phone from User where userNo = ${userNo} order by regTime desc limit 1;
     </select>
 
-    <select id="getUserNoByPhone" resultType="Long">
-        select userNo from User where phone=#{phone} order by regTime desc limit 1;
+    <select id="getUserDtoByPhone" resultType="sillenceSoft.schedulleCall.Dto.UserDto">
+        select * from User where phone=#{phone} order by regTime desc limit 1;
     </select>
 
     <select id="getIdByUserNo" resultType="String">
         select id from User where userNo = ${userNo};
     </select>
+
+    <select id="getUserDto" resultType="sillenceSoft.schedulleCall.Dto.UserDto">
+        select * from User where userNo = ${userNo} order by regTime limit 1;
+    </select>
+
+    <update id="updateUserDto" parameterType="sillenceSoft.schedulleCall.Dto.UserDto">
+        update User set statusNo = CASE WHEN ${userDto.statusNo}=0 THEN NULL ELSE ${userDto.statusNo} END ,
+        statusOn = #{userDto.statusOn}, statusState = #{userDto.statusState}
+        where userNo = ${userDto.userNo};
+    </update>
 </mapper>
 
 

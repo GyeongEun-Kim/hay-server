@@ -1,13 +1,11 @@
 package sillenceSoft.schedulleCall.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.jdbc.Null;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import sillenceSoft.schedulleCall.Dto.ScheduleRequestDto;
-import sillenceSoft.schedulleCall.Dto.ScheduleResponseDto;
-import sillenceSoft.schedulleCall.Dto.StatusDto;
-import sillenceSoft.schedulleCall.Dto.UserRequestDto;
+import sillenceSoft.schedulleCall.Dto.*;
 import sillenceSoft.schedulleCall.Repository.AccessRepository;
 import sillenceSoft.schedulleCall.Repository.ScheduleRepository;
 import sillenceSoft.schedulleCall.Repository.StatusRepository;
@@ -53,7 +51,7 @@ public class ScheduleService {
                     .isFromSchedule(true)
                     .build();
 
-            statusRepository.addStatus(statusDto);
+            statusRepository.addStatus(statusDto); //상태글 추가
 
             schedule.setStatusNo(statusDto.getStatusNo());
             scheduleRepository.addSchedule(userNo, schedule);
@@ -68,10 +66,14 @@ public class ScheduleService {
     public ResponseEntity deleteSchedule(Long userNo, Long scheduleNo) {
         try {
             Long statusNo = scheduleRepository.getStatusNo(scheduleNo);
-            scheduleRepository.deleteSchedule(userNo, scheduleNo);
-            statusRepository.deleteStatus(statusNo);
-            //로직 수정하고픔
-            return new ResponseEntity("success", HttpStatus.OK);
+           // scheduleRepository.deleteSchedule(userNo, scheduleNo); cascade로 자동삭제됨
+            if(statusNo==null) {
+                return new ResponseEntity("삭제할 스케줄이 없습니다", HttpStatus.NO_CONTENT);
+            }
+            else {
+                statusRepository.deleteStatus(statusNo);
+                return new ResponseEntity("success", HttpStatus.OK);
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -84,14 +86,14 @@ public class ScheduleService {
             String encryptedAccessUserPhone = sha256.encrypt(accessUserPhone);
             String encryptedUserPhone = userRepository.getPhoneByUserNo(userNo);
 
-            Long accessUserNo = userRepository.getUserNoByPhone(encryptedAccessUserPhone);
-            if(accessUserNo ==null) {
+            UserDto accessUserDto = userRepository.getUserDtoByPhone(encryptedAccessUserPhone);
+            if(accessUserDto==null) {
                 return new ResponseEntity("가입하지 않은 사용자입니다.",HttpStatus.NO_CONTENT);
             }
-            Long check = accessRepository.checkAccessOrNot(accessUserNo,encryptedUserPhone );
+            Long check = accessRepository.checkAccessOrNot(accessUserDto.getUserNo(),encryptedUserPhone );
 
             if (check ==1) {
-                ResponseEntity schedule = getMySchedule(accessUserNo);
+                ResponseEntity schedule = getMySchedule(accessUserDto.getUserNo());
                 return schedule;
             } else { //접근 자체가 불가할때
                 return new ResponseEntity("해당 사용자의 스케줄을 볼 수 없습니다",HttpStatus.NO_CONTENT);
@@ -107,7 +109,7 @@ public class ScheduleService {
             if (week == 7 ) week= 0;
             try {
                 Long statusNo = scheduleRepository.getScheduleStatusNo(userNo, week, hour, minute );
-                userRepository.setStatusState(userNo);
+                userRepository.setStatusState(userNo, "1");
                 userService.setNowStatus(userNo, statusNo, "1");
 
                 return new ResponseEntity("success",HttpStatus.OK);
@@ -121,14 +123,14 @@ public class ScheduleService {
 
 
         public ResponseEntity cancelScheduleStatus (Long userNo) {
-            //user Repo statusState 값 변경.
+            //user  statusState 값 변경.
             try {
-                userRepository.cancelStatusState(userNo); //스케줄상태 해제
-                //만약 현재상태가 스케줄의 상태글로 지정돼있으면 그것또한 해제
-                Long nowStatus = userRepository.getNowStatus(userNo);
-                if (nowStatus!=null && statusRepository.checkIsFromSchedule(nowStatus)) {
-                    userRepository.cancelNowStatus(userNo);
-                }
+                UserDto userDto = userRepository.getUserDto(userNo);
+               // System.out.println("userDto.isStatusOn() = " + userDto.isStatusOn());
+                userDto.setStatusState("0"); //스케줄 상태 해제
+                userDto.setStatusNo(0L); //현재 상태글 해제
+                userRepository.updateUserDto(userDto);
+
                 return new ResponseEntity("success", HttpStatus.OK);
             }
             catch (Exception e) {
@@ -144,6 +146,9 @@ public class ScheduleService {
                 /*
                만약 보내주시는 json에 statusNo가 같이오면 위에 코드는 필요없음~
                  */
+                if (statusNo==null) return new ResponseEntity("수정할 스케줄이 존재하지 않습니다", HttpStatus.NO_CONTENT);
+
+
                 statusRepository.updateStatus(schedule.getStatus(), statusNo,LocalDateTime.now());
                 schedule.setStatusNo(statusNo);
                 //상태글 업데이트

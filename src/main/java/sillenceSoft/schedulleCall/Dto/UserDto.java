@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
 
-
+@AllArgsConstructor
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import sillenceSoft.schedulleCall.Dto.UserDto;
 import sillenceSoft.schedulleCall.Dto.UserRequestDto;
 import sillenceSoft.schedulleCall.JwtAuthenticationFilter;
+import sillenceSoft.schedulleCall.Repository.StatusRepository;
 import sillenceSoft.schedulleCall.Repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +31,9 @@ public class UserService {
     private final KakaoUserInfo kakaoUserInfo;
     private final JWTProvider jwtProvider;
     private final JwtAuthenticationFilter filter;
+    private final StatusRepository statusRepository;
 
-    public UserDto login(UserRequestDto userRequestDto) throws NoSuchAlgorithmException {
+    public UserDto login(UserRequestDto userRequestDto)  {
         String id = sha256.encrypt(getIdBySocial(userRequestDto));
         //String id = sha256.encrypt("iii"); //로컬테스트용
         UserDto userDto = userRepository.findByIdAndSocial(id, userRequestDto.getSocial());
@@ -67,27 +69,32 @@ public class UserService {
 
     public ResponseEntity setNowStatus(Long userNo, Long statusNo, String statusState) {
         Boolean msg;
+        if (statusRepository.getStatus(statusNo)==null) {
+            return new ResponseEntity("해당 상태글이 없습니다",HttpStatus.NO_CONTENT);
+        }
+
+        UserDto userDto = userRepository.getUserDto(userNo);
         try {
-            Long nowStatus = userRepository.getStatusNo(userNo); //현재 상태글
+            Long nowStatus = userDto.getStatusNo(); //현재 저장되어 있는 상태글
             if (nowStatus == null) {
-                userRepository.setNowStatus(userNo, statusNo);
+                userRepository.setNowStatus(userNo, statusNo, false);
                 msg=true;
             } else {
                 if (statusState.equals("1")) {
                     if (statusNo == null) {
-                        userRepository.cancelNowStatus(userNo);
+                        userRepository.setNowStatus(userNo,statusNo, true);
                         msg=false;
                     } else {
-                        userRepository.setNowStatus(userNo, statusNo);
+                        userRepository.setNowStatus(userNo, statusNo, false);
                         msg=true;
                     }
                 } else {
                     if (nowStatus.equals(statusNo)) {
-                        userRepository.cancelNowStatus(userNo);
+                        userRepository.setNowStatus(userNo,statusNo, true);
                         msg= false;
                     } else {
-                        userRepository.setNowStatus(userNo, statusNo);
-                        userRepository.cancelStatusState(userNo);
+                        userRepository.setNowStatus(userNo, statusNo, false);
+                        userRepository.setStatusState(userNo,"0");
                         msg=true;
                     }
                 }
@@ -99,35 +106,6 @@ public class UserService {
 
 
             }
-
-
-//            if (nowStatus ==null) {
-//                userRepository.setNowStatus(userNo, statusNo);
-//                msg = true;
-//            }
-//            else if (nowStatus.equals(statusNo)){
-//                userRepository.cancelNowStatus(userNo); // 현재 상태글 해제
-//                msg = false;
-//            }
-//            else { //다른 산태글 설전된견누
-//                if (userRepository.getStatusState(userNo).equals("1")) { //스케줄 상태
-//                    userRepository.cancelStatusState(userNo);
-//                    if (statusNo==null)
-//                        userRepository.cancelNowStatus(userNo);
-//                    else
-//                        userRepository.setNowStatus(userNo, statusNo);
-//                }
-//                else  {
-//                    userRepository.setNowStatus(userNo, statusNo);
-//                }
-//                msg =true;
-//            }
-//            return new ResponseEntity(msg,HttpStatus.OK);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-
 
     }
 
@@ -181,12 +159,18 @@ public class UserService {
         }
     }
 
+    /*
+    statusOn 켜기/ 끄기
+     */
     public ResponseEntity statusShow (Long userNo) {
         String msg;
         try {
-            if (userRepository.getStatusOn(userNo)==true)
-                userRepository.setStatusOff(userNo);
-            else userRepository.setStatusOn(userNo);
+            UserDto userDto = userRepository.getUserDto(userNo);
+            if (userDto.isStatusOn()==false)
+                userDto.setStatusOn(true);
+            else
+                userDto.setStatusOn(false);
+            userRepository.updateUserDto(userDto);
             msg="success";
             return new ResponseEntity(msg, HttpStatus.OK);
         }

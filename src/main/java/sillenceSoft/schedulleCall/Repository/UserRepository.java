@@ -15,27 +15,27 @@ import java.util.Optional;
 public interface UserRepository {
     void login(@Param("userDto") UserDto userDto);
 
-    UserDto findById(@Param("id")String id);
-
-    Long getUserNoById (@Param("id")String id);
-
-    void setNowStatus (@Param("userNo") Long userNo, @Param("statusNo") Long statusNo);
+//    UserDto findById(@Param("id")String id);
+//
+//    Long getUserNoById (@Param("id")String id);
+//
 
     StatusResponseDto getNowStatusAndPhone (Long userNo);
 
-    void cancelNowStatus (Long userNo);
 
-    void setStatusOn (@Param("userNo")Long userNo);
+    void setNowStatus (@Param("userNo") Long userNo, @Param("statusNo") Long statusNo, @Param("toNull") Boolean toNull);
 
-    void setStatusOff (@Param("userNo")Long userNo);
-
-    Long findByPhone(String phone);
-
-    Long getStatusNo (Long userNo);
+//    void setStatusOn (@Param("userNo")Long userNo);
+//
+//    void setStatusOff (@Param("userNo")Long userNo);
+//
+//    Long findByPhone(String phone);
+//
+//    Long getStatusNo (Long userNo);
 
     Map<String,Object> getStatusOnAndPhone (Long userNo);
 
-    boolean getStatusOn (Long userNo);
+//    boolean getStatusOn (Long userNo);
 
     Long getNowStatus (Long userNo);
 
@@ -48,11 +48,13 @@ public interface UserRepository {
 
     String getStatusState (Long userNo);
 
-    void setStatusState (Long userNo);
-
-    void cancelStatusState (Long userNo);
+    void setStatusState (@Param("userNo") Long userNo, @Param("state") String state);
 
     String getPhoneByUserNo (Long userNo);
 
-    Long getUserNoByPhone (String phone);
+    UserDto getUserDtoByPhone (String phone);
+
+    UserDto getUserDto (Long userNo);
+
+    void updateUserDto (@Param("userDto") UserDto userDto);
 }
