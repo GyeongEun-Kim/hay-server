@@ -88,7 +88,7 @@ public class UserController {
     public ResponseEntity setNowStatus (HttpServletRequest request,Authentication authentication,
                               @RequestParam(name = "statusNo") Long statusNo) {
         Long userNo = jwtProvider.getUserNo(authentication);
-        ResponseEntity responseEntity = userService.setNowStatus(userNo, statusNo);
+        ResponseEntity responseEntity = userService.setNowStatus(userNo, statusNo, "0");
         logger.info(request.getRequestURI()+" Http Status: "+responseEntity.getStatusCode()+" "+responseEntity.getStatusCodeValue());
         return responseEntity;
     }

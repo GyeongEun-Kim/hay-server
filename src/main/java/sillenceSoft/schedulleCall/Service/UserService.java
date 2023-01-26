@@ -32,8 +32,8 @@ public class UserService {
     private final JwtAuthenticationFilter filter;
 
     public UserDto login(UserRequestDto userRequestDto) throws NoSuchAlgorithmException {
-        String id = sha256.encrypt(getIdBySocial(userRequestDto));
-       // String id = sha256.encrypt("iii"); //로컬테스트용
+        //String id = sha256.encrypt(getIdBySocial(userRequestDto));
+        String id = sha256.encrypt("iii"); //로컬테스트용
         UserDto userDto = userRepository.findByIdAndSocial(id, userRequestDto.getSocial());
 
         if (userDto == null) { //신규회원인 경우
@@ -65,33 +65,68 @@ public class UserService {
     }
 
 
-    public ResponseEntity setNowStatus(Long userNo, Long statusNo) {
+    public ResponseEntity setNowStatus(Long userNo, Long statusNo, String statusState) {
         Boolean msg;
         try {
             Long nowStatus = userRepository.getStatusNo(userNo); //현재 상태글
-            if (nowStatus ==null) {
+            if (nowStatus == null) {
                 userRepository.setNowStatus(userNo, statusNo);
-                msg = true;
-            }
-            else if (nowStatus.equals(statusNo)){
-                userRepository.cancelNowStatus(userNo); // 현재 상태글 해제
-                msg = false;
-            }
-            else {
-                if (userRepository.getStatusState(userNo).equals("1")) { //스케줄 상태
-                    userRepository.cancelStatusState(userNo);
-                    if (statusNo==null)
+                msg=true;
+            } else {
+                if (statusState.equals("1")) {
+                    if (statusNo == null) {
                         userRepository.cancelNowStatus(userNo);
-                    else
+                        msg=false;
+                    } else {
                         userRepository.setNowStatus(userNo, statusNo);
+                        msg=true;
+                    }
+                } else {
+                    if (nowStatus.equals(statusNo)) {
+                        userRepository.cancelNowStatus(userNo);
+                        msg= false;
+                    } else {
+                        userRepository.setNowStatus(userNo, statusNo);
+                        userRepository.cancelStatusState(userNo);
+                        msg=true;
+                    }
                 }
-                msg =true;
             }
-            return new ResponseEntity(msg,HttpStatus.OK);
-        } catch (Exception e) {
+            return new ResponseEntity(msg, HttpStatus.OK);
+        }catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
+
+            }
+
+
+//            if (nowStatus ==null) {
+//                userRepository.setNowStatus(userNo, statusNo);
+//                msg = true;
+//            }
+//            else if (nowStatus.equals(statusNo)){
+//                userRepository.cancelNowStatus(userNo); // 현재 상태글 해제
+//                msg = false;
+//            }
+//            else { //다른 산태글 설전된견누
+//                if (userRepository.getStatusState(userNo).equals("1")) { //스케줄 상태
+//                    userRepository.cancelStatusState(userNo);
+//                    if (statusNo==null)
+//                        userRepository.cancelNowStatus(userNo);
+//                    else
+//                        userRepository.setNowStatus(userNo, statusNo);
+//                }
+//                else  {
+//                    userRepository.setNowStatus(userNo, statusNo);
+//                }
+//                msg =true;
+//            }
+//            return new ResponseEntity(msg,HttpStatus.OK);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
 
 
     }
