@@ -31,9 +31,12 @@
     </select>
 
     <update id="setNowStatus">
-        update User set statusNo =
-        CASE WHEN ${toNull} = true
-        THEN NULL ELSE ${statusNo} END
+        update User set statusNo = ${statusNo}
+        where userNo = ${userNo};
+    </update>
+
+    <update id="cancelNowStatus">
+        update User set statusNo = NULL
         where userNo = ${userNo};
     </update>
 

@@ -110,7 +110,7 @@ public class ScheduleService {
             try {
                 Long statusNo = scheduleRepository.getScheduleStatusNo(userNo, week, hour, minute );
                 userRepository.setStatusState(userNo, "1");
-                userService.setNowStatus(userNo, statusNo, "1");
+                userService.setScheduleNowStatus(userNo, statusNo);
 
                 return new ResponseEntity("success",HttpStatus.OK);
             }

@@ -34,8 +34,8 @@ public class UserService {
     private final StatusRepository statusRepository;
 
     public UserDto login(UserRequestDto userRequestDto)  {
-        String id = sha256.encrypt(getIdBySocial(userRequestDto));
-        //String id = sha256.encrypt("iii"); //로컬테스트용
+        //String id = sha256.encrypt(getIdBySocial(userRequestDto));
+        String id = sha256.encrypt("iii"); //로컬테스트용
         UserDto userDto = userRepository.findByIdAndSocial(id, userRequestDto.getSocial());
 
         if (userDto == null) { //신규회원인 경우
@@ -67,45 +67,43 @@ public class UserService {
     }
 
 
-    public ResponseEntity setNowStatus(Long userNo, Long statusNo, String statusState) {
+    public ResponseEntity setNowStatus(Long userNo, Long statusNo) {
         Boolean msg;
-        if (statusRepository.getStatus(statusNo)==null) {
-            return new ResponseEntity("해당 상태글이 없습니다",HttpStatus.NO_CONTENT);
-        }
-
-        UserDto userDto = userRepository.getUserDto(userNo);
         try {
-            Long nowStatus = userDto.getStatusNo(); //현재 저장되어 있는 상태글
-            if (nowStatus == null) {
-                userRepository.setNowStatus(userNo, statusNo, false);
-                msg=true;
-            } else {
-                if (statusState.equals("1")) {
-                    if (statusNo == null) {
-                        userRepository.setNowStatus(userNo,statusNo, true);
-                        msg=false;
-                    } else {
-                        userRepository.setNowStatus(userNo, statusNo, false);
-                        msg=true;
-                    }
-                } else {
-                    if (nowStatus.equals(statusNo)) {
-                        userRepository.setNowStatus(userNo,statusNo, true);
-                        msg= false;
-                    } else {
-                        userRepository.setNowStatus(userNo, statusNo, false);
-                        userRepository.setStatusState(userNo,"0");
-                        msg=true;
-                    }
-                }
+        Long nowStatus = userRepository.getNowStatus(userNo);
+        if (nowStatus!=null && nowStatus==statusNo) {
+            userRepository.cancelNowStatus(userNo);
+            msg=false;
+        }
+        else {
+            userRepository.setNowStatus(userNo, statusNo);
+            msg=true;
+        }
+        return new ResponseEntity(msg,HttpStatus.OK);
+
+    }catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            return new ResponseEntity(msg, HttpStatus.OK);
+
+    }
+
+
+    public ResponseEntity setScheduleNowStatus(Long userNo, Long statusNo) {
+        Boolean msg;
+        try {
+            if (statusNo!=null) {
+                userRepository.setNowStatus(userNo, statusNo);
+            }
+            else {
+                userRepository.cancelNowStatus(userNo);
+            }
+            return new ResponseEntity("success", HttpStatus.OK);
+
         }catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
-
-
-            }
+        }
 
     }
 
