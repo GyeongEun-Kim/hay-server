@@ -71,12 +71,13 @@ public class UserService {
         Boolean msg;
         try {
         Long nowStatus = userRepository.getNowStatus(userNo);
-        if (nowStatus!=null && nowStatus==statusNo) {
+        if (nowStatus!=null && nowStatus.equals(statusNo)) {
             userRepository.cancelNowStatus(userNo);
             msg=false;
         }
         else {
             userRepository.setNowStatus(userNo, statusNo);
+            userRepository.setStatusState(userNo,"0");
             msg=true;
         }
         return new ResponseEntity(msg,HttpStatus.OK);
