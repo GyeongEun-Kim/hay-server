@@ -165,6 +165,8 @@ public class UserService {
         String msg;
         try {
             UserDto userDto = userRepository.getUserDto(userNo);
+            if (userDto.getStatusNo()==null)
+                userDto.setStatusNo(0L);
             if (userDto.isStatusOn()==false)
                 userDto.setStatusOn(true);
             else
