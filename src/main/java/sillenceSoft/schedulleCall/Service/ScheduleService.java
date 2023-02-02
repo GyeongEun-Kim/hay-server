@@ -91,8 +91,9 @@ public class ScheduleService {
                 return new ResponseEntity("가입하지 않은 사용자입니다.",HttpStatus.NO_CONTENT);
             }
             Long check = accessRepository.checkAccessOrNot(accessUserDto.getUserNo(),encryptedUserPhone );
+            boolean statusOn = accessUserDto.isStatusOn();
 
-            if (check ==1) {
+            if (check ==1 && statusOn==true) {
                 ResponseEntity schedule = getMySchedule(accessUserDto.getUserNo());
                 return schedule;
             } else { //접근 자체가 불가할때
