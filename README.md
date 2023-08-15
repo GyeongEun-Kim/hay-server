@@ -22,5 +22,5 @@
 
 
 ## 어플 및 멤버 소개 페이지
-https://hayapp.imweb.me/Crew
+https://hayapp.imweb.me
 플레이스토어에 게시 중단
